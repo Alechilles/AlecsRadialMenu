@@ -1,0 +1,22 @@
+radialmenu.ui.button.close=Close
+radialmenu.ui.title=Radial Menu
+radialmenu.ui.subtitle=Select an option
+radialmenu.ui.current.none=Current: None
+radialmenu.ui.current.value=Current: {0}
+radialmenu.ui.unknownOption=Unknown
+
+radialmenu.info.selection.selected=Selected option: {0}
+radialmenu.info.execute.success=Executed: {0}
+
+radialmenu.warning.menu.unavailable=This radial menu is unavailable: {0}
+radialmenu.warning.selection.unavailable=No selectable option is available.
+radialmenu.warning.open.unavailable=Unable to open the radial menu right now.
+radialmenu.warning.execute.commandBlank=This option has no command configured.
+radialmenu.warning.execute.commandFailed=Command execution failed: {0}
+radialmenu.warning.execute.actionBlank=This option has no action id configured.
+radialmenu.warning.execute.handlerMissing=No handler is registered for action: {0}
+radialmenu.warning.execute.handlerFailed=Registered action failed: {0}
+radialmenu.warning.execute.unsupported=This option type is not supported.
+server.items.Alec_Radial_Menu_Example.name=Radial Menu Tool (Example)
+server.items.Alec_Radial_Menu_Example.description=Primary opens the radial menu. Secondary executes the selected option.
+radialmenu.example.option.ping=Ping Action

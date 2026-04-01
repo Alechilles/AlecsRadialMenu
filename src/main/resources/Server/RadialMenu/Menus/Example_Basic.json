@@ -1,0 +1,26 @@
+{
+  "$Comment": "Example radial menu keyed by this asset path/name.",
+  "Enabled": true,
+  "ItemIds": [
+    "Alec_Radial_Menu_Example"
+  ],
+  "ExecutionMode": "SelectAndArm",
+  "DefaultOptionId": "config",
+  "Options": [
+    {
+      "Type": "ExecuteCommand",
+      "Id": "config",
+      "Label": "/tw config",
+      "Command": "/tw config"
+    },
+    {
+      "Type": "InvokeRegisteredAction",
+      "Id": "ping",
+      "LabelKey": "radialmenu.example.option.ping",
+      "ActionId": "Example.Ping",
+      "Payload": {
+        "source": "example-menu"
+      }
+    }
+  ]
+}

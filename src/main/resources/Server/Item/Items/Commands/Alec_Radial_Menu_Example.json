@@ -1,0 +1,43 @@
+{
+  "$Comment": "Example radial-menu tool. Primary opens menu, secondary executes selected option.",
+  "TranslationProperties": {
+    "Name": "server.items.Alec_Radial_Menu_Example.name",
+    "Description": "server.items.Alec_Radial_Menu_Example.description"
+  },
+  "Quality": "Tool",
+  "PlayerAnimationsId": "Item",
+  "Interactions": {
+    "Primary": {
+      "Interactions": [
+        {
+          "Type": "RadialMenuInteraction",
+          "CommandId": "OpenMenu"
+        }
+      ]
+    },
+    "Secondary": {
+      "Interactions": [
+        {
+          "Type": "RadialMenuInteraction",
+          "CommandId": "ExecuteSelected"
+        }
+      ]
+    }
+  },
+  "Model": "Items/Consumables/Recipes/Recipe.blockymodel",
+  "Texture": "Items/Consumables/Recipes/Recipe_Texture.png",
+  "Icon": "Icons/ItemsGenerated/Recipe_Page.png",
+  "IconProperties": {
+    "Scale": 0.76,
+    "Translation": [
+      -1,
+      5
+    ],
+    "Rotation": [
+      135,
+      135,
+      0
+    ]
+  },
+  "MaxStack": 1
+}
