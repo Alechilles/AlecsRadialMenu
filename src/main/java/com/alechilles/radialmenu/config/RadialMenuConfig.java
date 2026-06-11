@@ -27,7 +27,7 @@ import com.hypixel.hytale.codec.schema.SchemaContext;
 import com.hypixel.hytale.codec.schema.config.Schema;
 import com.hypixel.hytale.codec.schema.config.StringSchema;
 import com.hypixel.hytale.math.codec.Vector3dArrayCodec;
-import com.hypixel.hytale.math.vector.Vector3d;
+import org.joml.Vector3d;
 
 public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultAssetMap<String, RadialMenuConfig>> {
     private static final Option[] EMPTY_OPTIONS = new Option[0];

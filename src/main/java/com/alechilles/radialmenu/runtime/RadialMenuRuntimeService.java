@@ -315,6 +315,9 @@ public final class RadialMenuRuntimeService {
         if (text == null || text.isBlank()) {
             return;
         }
-        player.sendMessage(Message.raw(text));
+        PlayerRef playerRef = player.getPlayerRef();
+        if (playerRef != null && playerRef.isValid()) {
+            playerRef.sendMessage(Message.raw(text));
+        }
     }
 }
