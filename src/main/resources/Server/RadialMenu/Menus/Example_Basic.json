@@ -29,7 +29,7 @@
       "Type": "ExecuteCommand",
       "Id": "set_home",
       "Label": "Set Home",
-      "Command": "/sethome"
+      "Command": "/sethome home"
     },
     {
       "Type": "ExecuteCommand",

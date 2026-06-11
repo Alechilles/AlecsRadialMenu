@@ -10,7 +10,7 @@ This release expands Alec's Radial Menu into a configurable visual framework and
 - Validation coverage for visual configuration and texture completeness.
 
 ## Changed
-- Updated the example radial menu to use the default texture wheel without an explicit texture prefix.
+- Updated the example radial menu to use the default texture wheel without an explicit texture prefix, and populated it with practical starter commands.
 - Moved texture generator examples to scratch output paths outside packaged resources.
 
 ## Fixed
