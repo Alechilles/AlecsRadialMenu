@@ -21,6 +21,8 @@ class RadialMenuPageLayoutTest {
                 StandardCharsets.UTF_8
         );
 
-        assertTrue(template.contains("@Anchor = (Bottom: -36, Width: 180, Left: 370);"));
+        assertTrue(template.contains("TextButton #RadialMenuCloseButton"));
+        assertTrue(template.contains("Anchor: (Bottom: -36, Width: 180, Height: 44, Left: 370);"));
+        assertTrue(template.contains("Style: $C.@SecondaryTextButtonStyle;"));
     }
 }
