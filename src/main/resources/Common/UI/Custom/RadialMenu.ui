@@ -101,10 +101,13 @@ $C.@PageOverlay {
   LayoutMode: Middle;
 
   Group #RadialMenuWheel {
-    Anchor: (Width: 920, Height: 760);
+    Anchor: (Width: 920, Height: 832);
     Visible: false;
 
-    Label #RadialMenuTitle {
+    Group #RadialMenuContent {
+      Anchor: (Top: 36, Width: 920, Height: 760);
+
+      Label #RadialMenuTitle {
       Anchor: (Top: 18, Width: 620, Height: 42, Left: 150);
       Text: "";
       Style: (
@@ -372,8 +375,10 @@ $C.@PageOverlay {
       Visible: false;
     }
 
+    }
+
     TextButton #RadialMenuCloseButton {
-      Anchor: (Bottom: -36, Width: 180, Height: 44, Left: 370);
+      Anchor: (Bottom: 0, Width: 180, Height: 44, Left: 370);
       Style: $C.@SecondaryTextButtonStyle;
       Text: %server.radialmenu.ui.button.close;
     }
