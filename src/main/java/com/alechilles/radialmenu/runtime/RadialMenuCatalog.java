@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,10 +17,19 @@ import com.alechilles.radialmenu.config.RadialMenuConfig;
 import com.alechilles.radialmenu.config.RadialMenuConfig.ExecuteCommandOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.InvokeRegisteredActionOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
+import com.alechilles.radialmenu.config.RadialMenuConfig.OptionVisualOverride;
+import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
+import com.alechilles.radialmenu.config.RadialMenuConfig.StateColors;
+import com.alechilles.radialmenu.config.RadialMenuConfig.StatePalette;
+import com.alechilles.radialmenu.config.RadialMenuConfig.TextureSet;
+import com.alechilles.radialmenu.config.RadialMenuConfig.Visual;
 import com.hypixel.hytale.logger.HytaleLogger;
 
 public final class RadialMenuCatalog {
     public static final int MAX_OPTIONS = 8;
+    private static final Pattern COLOR_PATTERN = Pattern.compile(
+            "^#([0-9a-fA-F]{6}|[0-9a-fA-F]{8})(\\((?:0(?:\\.\\d+)?|1(?:\\.0+)?)\\))?$"
+    );
 
     private final Map<String, RadialMenuConfig> menusByNormalizedKey = new LinkedHashMap<>();
     private final Map<String, String> itemToMenuKey = new LinkedHashMap<>();
@@ -108,6 +118,7 @@ public final class RadialMenuCatalog {
             if (!optionIds.add(optionId)) {
                 issues.add("Duplicate option Id: " + option.getId());
             }
+            validateOptionVisualOverride(option, issues);
             if (option instanceof ExecuteCommandOption executeCommandOption) {
                 if (executeCommandOption.getCommand() == null || executeCommandOption.getCommand().isBlank()) {
                     issues.add("ExecuteCommand option '" + option.getId() + "' has blank Command.");
@@ -127,7 +138,118 @@ public final class RadialMenuCatalog {
         if (defaultOptionId != null && !optionIds.contains(defaultOptionId)) {
             issues.add("DefaultOptionId does not match any option Id.");
         }
+
+        validateVisual(normalizedMenu.getVisual(), issues);
         return Collections.unmodifiableList(issues);
+    }
+
+    private void validateVisual(@Nonnull Visual visual, @Nonnull List<String> issues) {
+        int outer = visual.getGeometry().getOuterDiameterPx();
+        int inner = visual.getGeometry().getInnerDiameterPx();
+        int labelRadius = visual.getGeometry().getLabelRadiusPx();
+        int center = visual.getGeometry().getCenterDiameterPx();
+
+        if (outer <= 0) {
+            issues.add("Visual.Geometry.OuterDiameterPx must be > 0.");
+        }
+        if (inner <= 0) {
+            issues.add("Visual.Geometry.InnerDiameterPx must be > 0.");
+        }
+        if (outer > 0 && inner > 0 && inner >= outer) {
+            issues.add("Visual.Geometry.InnerDiameterPx must be smaller than OuterDiameterPx.");
+        }
+        if (center <= 0) {
+            issues.add("Visual.Geometry.CenterDiameterPx must be > 0.");
+        }
+        if (inner > 0 && center > inner) {
+            issues.add("Visual.Geometry.CenterDiameterPx must be <= InnerDiameterPx.");
+        }
+        if (labelRadius <= 0) {
+            issues.add("Visual.Geometry.LabelRadiusPx must be > 0.");
+        } else {
+            double minRadius = inner / 2.0;
+            double maxRadius = outer / 2.0;
+            if (outer > 0 && inner > 0 && (labelRadius <= minRadius || labelRadius >= maxRadius)) {
+                issues.add("Visual.Geometry.LabelRadiusPx must be between inner and outer radii.");
+            }
+        }
+
+        if (visual.getBorderThicknessPx() < 0) {
+            issues.add("Visual.BorderThicknessPx must be >= 0.");
+        }
+        if (visual.getLabel().getFontSize() <= 0) {
+            issues.add("Visual.Label.FontSize must be > 0.");
+        }
+
+        validateStatePalette("Visual.States", visual.getStates(), issues, false);
+
+        if (visual.getRenderMode() == RenderMode.Texture) {
+            TextureSet textureSet = visual.getTextureSet();
+            String prefix = textureSet.getPrefix();
+            if ((prefix == null || prefix.isBlank()) && textureSet.getPreset() == null) {
+                issues.add("Visual.TextureSet must specify Preset or Prefix in Texture mode.");
+            }
+        }
+    }
+
+    private void validateOptionVisualOverride(@Nonnull Option option, @Nonnull List<String> issues) {
+        OptionVisualOverride override = option.getVisualOverride();
+        if (override == null) {
+            return;
+        }
+        if (override.getLabelFontSize() != null && override.getLabelFontSize() <= 0) {
+            issues.add("Option '" + option.getId() + "' VisualOverride.LabelFontSize must be > 0.");
+        }
+        StatePalette palette = override.getStates();
+        if (palette != null) {
+            validateStatePalette(
+                    "Option '" + option.getId() + "' VisualOverride.States",
+                    palette,
+                    issues,
+                    true
+            );
+        }
+    }
+
+    private void validateStatePalette(@Nonnull String owner,
+                                      @Nonnull StatePalette palette,
+                                      @Nonnull List<String> issues,
+                                      boolean allowMissingStates) {
+        validateStateColors(owner + ".Default", allowMissingStates ? palette.getDefaultStateRaw() : palette.getDefaultState(), issues, allowMissingStates);
+        validateStateColors(owner + ".Hover", allowMissingStates ? palette.getHoverStateRaw() : palette.getHoverState(), issues, allowMissingStates);
+        validateStateColors(owner + ".Pressed", allowMissingStates ? palette.getPressedStateRaw() : palette.getPressedState(), issues, allowMissingStates);
+        validateStateColors(owner + ".Selected", allowMissingStates ? palette.getSelectedStateRaw() : palette.getSelectedState(), issues, allowMissingStates);
+        validateStateColors(owner + ".Disabled", allowMissingStates ? palette.getDisabledStateRaw() : palette.getDisabledState(), issues, allowMissingStates);
+    }
+
+    private void validateStateColors(@Nonnull String owner,
+                                     @Nullable StateColors colors,
+                                     @Nonnull List<String> issues,
+                                     boolean allowMissingState) {
+        if (colors == null) {
+            if (!allowMissingState) {
+                issues.add(owner + " must be defined.");
+            }
+            return;
+        }
+        validateColor(owner + ".FillColor", colors.getFillColor(), issues, allowMissingState);
+        validateColor(owner + ".TextColor", colors.getTextColor(), issues, allowMissingState);
+        validateColor(owner + ".BorderColor", colors.getBorderColor(), issues, allowMissingState);
+    }
+
+    private void validateColor(@Nonnull String field,
+                               @Nullable String value,
+                               @Nonnull List<String> issues,
+                               boolean allowMissing) {
+        if (value == null || value.isBlank()) {
+            if (!allowMissing) {
+                issues.add(field + " cannot be blank.");
+            }
+            return;
+        }
+        if (!COLOR_PATTERN.matcher(value.trim()).matches()) {
+            issues.add(field + " is not a valid hex color string.");
+        }
     }
 
     @Nullable

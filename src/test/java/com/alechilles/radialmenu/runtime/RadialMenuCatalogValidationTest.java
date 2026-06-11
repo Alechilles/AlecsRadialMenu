@@ -11,6 +11,7 @@ import com.alechilles.radialmenu.TestConfigFactory;
 import com.alechilles.radialmenu.config.RadialMenuConfig;
 import com.alechilles.radialmenu.config.RadialMenuConfig.ExecutionMode;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
+import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
 
 class RadialMenuCatalogValidationTest {
     @Test
@@ -73,5 +74,77 @@ class RadialMenuCatalogValidationTest {
         List<String> issues = catalog.validate(config);
         assertTrue(issues.stream().anyMatch(x -> x.contains("blank Command")));
         assertTrue(issues.stream().anyMatch(x -> x.contains("blank ActionId")));
+    }
+
+    @Test
+    void validateRejectsInvalidVisualGeometryAndColors() {
+        RadialMenuCatalog catalog = new RadialMenuCatalog();
+        RadialMenuConfig config = TestConfigFactory.menu(
+                "example/visual-invalid",
+                ExecutionMode.SelectAndArm,
+                null,
+                new String[0],
+                TestConfigFactory.commandOption("config", "Config", "/tw config")
+        );
+
+        TestConfigFactory.setVisual(
+                config,
+                TestConfigFactory.visual(
+                        RenderMode.Vector,
+                        100,
+                        120,
+                        10,
+                        140,
+                        -1,
+                        0,
+                        TestConfigFactory.statePalette(
+                                TestConfigFactory.stateColors("not-a-color", "#ffffff", "#000000"),
+                                TestConfigFactory.stateColors("#111111", "#ffffff", "#000000"),
+                                TestConfigFactory.stateColors("#111111", "#ffffff", "#000000"),
+                                TestConfigFactory.stateColors("#111111", "#ffffff", "#000000"),
+                                TestConfigFactory.stateColors("#111111", "#ffffff", "#000000")
+                        ),
+                        null
+                )
+        );
+
+        List<String> issues = catalog.validate(config);
+        assertTrue(issues.stream().anyMatch(x -> x.contains("InnerDiameterPx must be smaller")));
+        assertTrue(issues.stream().anyMatch(x -> x.contains("CenterDiameterPx must be <= InnerDiameterPx")));
+        assertTrue(issues.stream().anyMatch(x -> x.contains("LabelRadiusPx must be between")));
+        assertTrue(issues.stream().anyMatch(x -> x.contains("BorderThicknessPx must be >= 0")));
+        assertTrue(issues.stream().anyMatch(x -> x.contains("Visual.Label.FontSize must be > 0")));
+        assertTrue(issues.stream().anyMatch(x -> x.contains("FillColor is not a valid hex color string")));
+    }
+
+    @Test
+    void validateRejectsInvalidOptionVisualOverride() {
+        RadialMenuCatalog catalog = new RadialMenuCatalog();
+        Option option = TestConfigFactory.commandOption("config", "Config", "/tw config");
+        TestConfigFactory.setOptionVisualOverride(
+                option,
+                TestConfigFactory.optionVisualOverride(
+                        0,
+                        TestConfigFactory.statePalette(
+                                TestConfigFactory.stateColors("#ffffff", "#ffffff", "#ffffff"),
+                                TestConfigFactory.stateColors("#ffffff", "#ffffff", "#ffffff"),
+                                TestConfigFactory.stateColors("#ffffff", "bad-color", "#ffffff"),
+                                null,
+                                null
+                        )
+                )
+        );
+
+        RadialMenuConfig config = TestConfigFactory.menu(
+                "example/option-visual-invalid",
+                ExecutionMode.SelectAndArm,
+                null,
+                new String[0],
+                option
+        );
+
+        List<String> issues = catalog.validate(config);
+        assertTrue(issues.stream().anyMatch(x -> x.contains("VisualOverride.LabelFontSize must be > 0")));
+        assertTrue(issues.stream().anyMatch(x -> x.contains("TextColor is not a valid hex color string")));
     }
 }

@@ -11,7 +11,7 @@
       "Interactions": [
         {
           "Type": "RadialMenuInteraction",
-          "CommandId": "OpenMenu"
+          "CommandId": "ExecuteSelected"
         }
       ]
     },
@@ -19,7 +19,7 @@
       "Interactions": [
         {
           "Type": "RadialMenuInteraction",
-          "CommandId": "ExecuteSelected"
+          "CommandId": "OpenMenu"
         }
       ]
     }

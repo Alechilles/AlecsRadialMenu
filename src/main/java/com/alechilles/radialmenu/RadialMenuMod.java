@@ -8,8 +8,10 @@ import javax.annotation.Nullable;
 
 import com.alechilles.radialmenu.api.RadialMenuApi;
 import com.alechilles.radialmenu.api.internal.RadialMenuApiImpl;
+import com.alechilles.radialmenu.assets.RadialMenuAssetPackCoordinator;
 import com.alechilles.radialmenu.config.RadialMenuConfig;
 import com.alechilles.radialmenu.interactions.RadialMenuInteraction;
+import com.alechilles.radialmenu.metrics.RadialMenuHStatsIntegration;
 import com.alechilles.radialmenu.runtime.PlayerCommandDispatcher;
 import com.alechilles.radialmenu.runtime.RadialMenuActionRegistry;
 import com.alechilles.radialmenu.runtime.RadialMenuCatalog;
@@ -32,6 +34,8 @@ public final class RadialMenuMod extends JavaPlugin {
     private RadialMenuActionRegistry actionRegistry;
     private RadialMenuRuntimeService runtimeService;
     private RadialMenuApi api;
+    private RadialMenuAssetPackCoordinator assetPackCoordinator;
+    private RadialMenuHStatsIntegration hStatsIntegration;
     private boolean menuAssetsRegistered;
 
     public RadialMenuMod(@Nonnull JavaPluginInit init) {
@@ -48,6 +52,8 @@ public final class RadialMenuMod extends JavaPlugin {
         PlayerCommandDispatcher commandDispatcher = new PlayerCommandDispatcher(this, getLogger());
         runtimeService = new RadialMenuRuntimeService(menuCatalog, sessionStore, actionRegistry, commandDispatcher, getLogger());
         api = new RadialMenuApiImpl(actionRegistry, menuCatalog, runtimeService);
+        assetPackCoordinator = new RadialMenuAssetPackCoordinator(this);
+        hStatsIntegration = new RadialMenuHStatsIntegration(this);
 
         Interaction.CODEC.register(
                 "RadialMenuInteraction",
@@ -62,6 +68,12 @@ public final class RadialMenuMod extends JavaPlugin {
     @Override
     protected void start() {
         refreshCatalog();
+        if (assetPackCoordinator != null) {
+            assetPackCoordinator.ensureAssetEditorPackVisible();
+        }
+        if (hStatsIntegration != null) {
+            hStatsIntegration.initialize();
+        }
         getLogger().at(java.util.logging.Level.INFO).log(
                 "Alec's Radial Menu enabled. Menus loaded: " + menuCatalog.listMenuKeys().size()
         );
@@ -78,6 +90,8 @@ public final class RadialMenuMod extends JavaPlugin {
         actionRegistry = null;
         menuCatalog = null;
         sessionStore = null;
+        assetPackCoordinator = null;
+        hStatsIntegration = null;
         getLogger().at(java.util.logging.Level.INFO).log("Alec's Radial Menu disabled.");
     }
 

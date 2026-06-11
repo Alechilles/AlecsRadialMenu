@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import com.alechilles.radialmenu.TestConfigFactory;
 import com.alechilles.radialmenu.config.RadialMenuConfig.ExecutionMode;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
+import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
 
 class RadialMenuConfigTest {
     @Test
@@ -57,5 +58,27 @@ class RadialMenuConfigTest {
                 new String[0]
         );
         assertNull(empty.resolveDefaultOption());
+    }
+
+    @Test
+    void visualDefaultsToVectorModeWithGeometryAndStates() {
+        RadialMenuConfig config = TestConfigFactory.menu(
+                "menus/example/visual-defaults",
+                ExecutionMode.SelectAndArm,
+                null,
+                new String[0],
+                TestConfigFactory.commandOption("first", "First", "/first")
+        );
+
+        assertEquals(RenderMode.Vector, config.getVisual().getRenderMode());
+        assertEquals(640, config.getVisual().getGeometry().getOuterDiameterPx());
+        assertEquals(300, config.getVisual().getGeometry().getInnerDiameterPx());
+        assertEquals(234, config.getVisual().getGeometry().getLabelRadiusPx());
+        assertEquals(300, config.getVisual().getGeometry().getCenterDiameterPx());
+        assertNotNull(config.getVisual().getStates().getDefaultState().getFillColor());
+        assertNotNull(config.getVisual().getStates().getHoverState().getFillColor());
+        assertNotNull(config.getVisual().getStates().getPressedState().getFillColor());
+        assertNotNull(config.getVisual().getStates().getSelectedState().getFillColor());
+        assertNotNull(config.getVisual().getStates().getDisabledState().getFillColor());
     }
 }

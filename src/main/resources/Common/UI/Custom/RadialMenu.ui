@@ -25,6 +25,14 @@ $C = "Common.ui";
   ...@SliceButtonLabelStyle
 );
 
+@SliceHitButtonStyle = TextButtonStyle(
+  Default: (Background: (Color: #00000000), LabelStyle: @SliceButtonLabelStyle),
+  Hovered: (Background: (Color: #00000000), LabelStyle: @SliceButtonLabelStyle),
+  Pressed: (Background: (Color: #00000000), LabelStyle: @SliceButtonLabelStyle),
+  Disabled: (Background: (Color: #00000000), LabelStyle: @SliceButtonDisabledLabelStyle),
+  Sounds: $C.@ButtonSounds
+);
+
 @Slice0ButtonStyle = TextButtonStyle(
   Default: (Background: (TexturePath: "RadialMenu/CommandWheelSlice0_Default.png"), LabelStyle: @SliceButtonLabelStyle),
   Hovered: (Background: (TexturePath: "RadialMenu/CommandWheelSlice0_Hover.png"), LabelStyle: @SliceButtonLabelStyle),
@@ -131,9 +139,63 @@ $C.@PageOverlay {
       Visible: false;
     }
 
+    Group #CommandVisual0 {
+      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
+      Background: (TexturePath: "RadialMenu/CommandWheelSlice0_Default.png");
+      Visible: false;
+    }
+
+    Group #CommandVisual1 {
+      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
+      Background: (TexturePath: "RadialMenu/CommandWheelSlice1_Default.png");
+      Visible: false;
+    }
+
+    Group #CommandVisual2 {
+      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
+      Background: (TexturePath: "RadialMenu/CommandWheelSlice2_Default.png");
+      Visible: false;
+    }
+
+    Group #CommandVisual3 {
+      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
+      Background: (TexturePath: "RadialMenu/CommandWheelSlice3_Default.png");
+      Visible: false;
+    }
+
+    Group #CommandVisual4 {
+      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
+      Background: (TexturePath: "RadialMenu/CommandWheelSlice4_Default.png");
+      Visible: false;
+    }
+
+    Group #CommandVisual5 {
+      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
+      Background: (TexturePath: "RadialMenu/CommandWheelSlice5_Default.png");
+      Visible: false;
+    }
+
+    Group #CommandVisual6 {
+      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
+      Background: (TexturePath: "RadialMenu/CommandWheelSlice6_Default.png");
+      Visible: false;
+    }
+
+    Group #CommandVisual7 {
+      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
+      Background: (TexturePath: "RadialMenu/CommandWheelSlice7_Default.png");
+      Visible: false;
+    }
+
     Group #CommandWheelCenterPanel {
       Anchor: (Top: 270, Left: 310, Width: 300, Height: 300);
       Background: (TexturePath: "RadialMenu/CommandWheelCenterPanel.png");
+    }
+
+    Group #CommandWheelCenterBorder {
+      Anchor: (Top: 270, Left: 310, Width: 300, Height: 300);
+      Background: (TexturePath: "RadialMenu/Vector/CommandWheelCenterPanel_Border.png");
+      Visible: false;
     }
 
     Label #RadialMenuCurrent {
@@ -152,57 +214,105 @@ $C.@PageOverlay {
 
     TextButton #CommandButton0 {
       Anchor: (Top: 121, Left: 352, Width: 217, Height: 142);
-      Style: @Slice0ButtonStyle;
+      Style: @SliceHitButtonStyle;
       Text: "";
+      Visible: false;
+    }
+
+    Group #CommandBorder0 {
+      Anchor: (Top: 121, Left: 352, Width: 217, Height: 142);
+      Background: (TexturePath: "RadialMenu/Vector/CommandWheelSlice0_Border.png");
       Visible: false;
     }
 
     TextButton #CommandButton1 {
       Anchor: (Top: 147, Left: 526, Width: 207, Height: 207);
-      Style: @Slice1ButtonStyle;
+      Style: @SliceHitButtonStyle;
       Text: "";
+      Visible: false;
+    }
+
+    Group #CommandBorder1 {
+      Anchor: (Top: 147, Left: 526, Width: 207, Height: 207);
+      Background: (TexturePath: "RadialMenu/Vector/CommandWheelSlice1_Border.png");
       Visible: false;
     }
 
     TextButton #CommandButton2 {
       Anchor: (Top: 312, Left: 617, Width: 142, Height: 217);
-      Style: @Slice2ButtonStyle;
+      Style: @SliceHitButtonStyle;
       Text: "";
+      Visible: false;
+    }
+
+    Group #CommandBorder2 {
+      Anchor: (Top: 312, Left: 617, Width: 142, Height: 217);
+      Background: (TexturePath: "RadialMenu/Vector/CommandWheelSlice2_Border.png");
       Visible: false;
     }
 
     TextButton #CommandButton3 {
       Anchor: (Top: 486, Left: 526, Width: 207, Height: 207);
-      Style: @Slice3ButtonStyle;
+      Style: @SliceHitButtonStyle;
       Text: "";
+      Visible: false;
+    }
+
+    Group #CommandBorder3 {
+      Anchor: (Top: 486, Left: 526, Width: 207, Height: 207);
+      Background: (TexturePath: "RadialMenu/Vector/CommandWheelSlice3_Border.png");
       Visible: false;
     }
 
     TextButton #CommandButton4 {
       Anchor: (Top: 577, Left: 352, Width: 217, Height: 142);
-      Style: @Slice4ButtonStyle;
+      Style: @SliceHitButtonStyle;
       Text: "";
+      Visible: false;
+    }
+
+    Group #CommandBorder4 {
+      Anchor: (Top: 577, Left: 352, Width: 217, Height: 142);
+      Background: (TexturePath: "RadialMenu/Vector/CommandWheelSlice4_Border.png");
       Visible: false;
     }
 
     TextButton #CommandButton5 {
       Anchor: (Top: 486, Left: 187, Width: 207, Height: 207);
-      Style: @Slice5ButtonStyle;
+      Style: @SliceHitButtonStyle;
       Text: "";
+      Visible: false;
+    }
+
+    Group #CommandBorder5 {
+      Anchor: (Top: 486, Left: 187, Width: 207, Height: 207);
+      Background: (TexturePath: "RadialMenu/Vector/CommandWheelSlice5_Border.png");
       Visible: false;
     }
 
     TextButton #CommandButton6 {
       Anchor: (Top: 312, Left: 161, Width: 142, Height: 217);
-      Style: @Slice6ButtonStyle;
+      Style: @SliceHitButtonStyle;
       Text: "";
+      Visible: false;
+    }
+
+    Group #CommandBorder6 {
+      Anchor: (Top: 312, Left: 161, Width: 142, Height: 217);
+      Background: (TexturePath: "RadialMenu/Vector/CommandWheelSlice6_Border.png");
       Visible: false;
     }
 
     TextButton #CommandButton7 {
       Anchor: (Top: 147, Left: 187, Width: 207, Height: 207);
-      Style: @Slice7ButtonStyle;
+      Style: @SliceHitButtonStyle;
       Text: "";
+      Visible: false;
+    }
+
+    Group #CommandBorder7 {
+      Anchor: (Top: 147, Left: 187, Width: 207, Height: 207);
+      Background: (TexturePath: "RadialMenu/Vector/CommandWheelSlice7_Border.png");
       Visible: false;
     }
 
@@ -268,5 +378,3 @@ $C.@PageOverlay {
     }
   }
 }
-
-

@@ -1,7 +1,6 @@
 package com.alechilles.radialmenu.runtime;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
@@ -17,6 +16,7 @@ import com.alechilles.radialmenu.config.RadialMenuConfig.InvokeRegisteredActionO
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
 import com.alechilles.radialmenu.localization.RadialMenuLocalizedText;
 import com.alechilles.radialmenu.ui.RadialMenuPage;
+import com.hypixel.hytale.assetstore.map.DefaultAssetMap;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.logger.HytaleLogger;
@@ -48,6 +48,7 @@ public final class RadialMenuRuntimeService {
 
     @Nullable
     public String resolveMenuKey(@Nullable String menuKeyOverride, @Nullable String itemId) {
+        refreshCatalogFromAssetStore();
         String normalizedOverride = RadialMenuCatalog.normalizeKey(menuKeyOverride);
         if (normalizedOverride != null) {
             return normalizedOverride;
@@ -59,6 +60,7 @@ public final class RadialMenuRuntimeService {
                             @Nullable String menuKey,
                             @Nullable ExecutionMode modeOverride,
                             @Nonnull String source) {
+        refreshCatalogFromAssetStore();
         String normalizedMenuKey = RadialMenuCatalog.normalizeKey(menuKey);
         if (player == null) {
             return false;
@@ -101,7 +103,8 @@ public final class RadialMenuRuntimeService {
                 normalizedMenuKey,
                 menu,
                 selectedOptionId,
-                optionId -> selectOption(player, normalizedMenuKey, optionId, modeOverride, source + ".menu")
+                optionId -> selectOption(player, normalizedMenuKey, optionId, modeOverride, source + ".menu"),
+                logger
         );
         player.getPageManager().openCustomPage(playerRef, store, page);
         return true;
@@ -127,6 +130,7 @@ public final class RadialMenuRuntimeService {
                                    @Nullable String menuKey,
                                    @Nullable ExecutionMode modeOverride,
                                    @Nonnull String source) {
+        refreshCatalogFromAssetStore();
         String normalizedMenuKey = RadialMenuCatalog.normalizeKey(menuKey);
         if (player == null) {
             return false;
@@ -319,5 +323,14 @@ public final class RadialMenuRuntimeService {
         if (playerRef != null && playerRef.isValid()) {
             playerRef.sendMessage(Message.raw(text));
         }
+    }
+
+    private void refreshCatalogFromAssetStore() {
+        DefaultAssetMap<String, RadialMenuConfig> map = RadialMenuConfig.getAssetMap();
+        if (map == null || map.getAssetMap() == null) {
+            return;
+        }
+        Map<String, RadialMenuConfig> assets = map.getAssetMap();
+        catalog.rebuild(assets, logger);
     }
 }

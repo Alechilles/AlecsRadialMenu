@@ -20,12 +20,33 @@ Standalone radial menu framework mod for Hytale.
 - `ExecutionMode` (`SelectAndArm` default)
 - `DefaultOptionId` (optional)
 - `Options[]` (required, 1..8)
+- `Visual` (optional, defaults to vector mode)
+
+### `Visual` Fields
+- `RenderMode`: `Vector` (default) or `Texture`
+- `Geometry`:
+  - `OuterDiameterPx`
+  - `InnerDiameterPx`
+  - `LabelRadiusPx`
+  - `CenterDiameterPx`
+- `BorderThicknessPx`
+- `Label.FontSize`
+- `States`:
+  - `Default`, `Hover`, `Pressed`, `Selected`, `Disabled`
+  - each state supports `FillColor`, `TextColor`, `BorderColor`
+- `TextureSet`:
+  - `Preset` (`LegacyDefault`)
+  - `Prefix` (custom texture set path using the same naming convention)
 
 ### Option Types
 - `ExecuteCommand`
-  - `Id`, optional `Label`/`LabelKey`, `Command`
+  - `Id`, optional `Label`/`LabelKey`, `Command`, optional `VisualOverride`
 - `InvokeRegisteredAction`
-  - `Id`, optional `Label`/`LabelKey`, `ActionId`, optional `Payload`
+  - `Id`, optional `Label`/`LabelKey`, `ActionId`, optional `Payload`, optional `VisualOverride`
+
+### `VisualOverride` Fields (Option)
+- `LabelFontSize` (optional)
+- `States` (optional partial state/color overrides)
 
 ## Interaction Usage
 `RadialMenuInteraction` supports:
@@ -70,3 +91,35 @@ if (api != null) {
 # Use prerelease install path (can combine with profiles above)
 .\mvnw.cmd -Dprerelease=true -Pinstall-plugin package
 ```
+
+## Texture Slice Generator Script
+Use `scripts/generate_rotated_radial_slices.py` to generate all 8 textured slice files from one source image.
+
+```powershell
+python scripts/generate_rotated_radial_slices.py `
+  --input "C:\Users\22ale\Downloads\Ellipse.png" `
+  --output-dir "target/radial-textures/EllipseTest" `
+  --copy-core-from "src/main/resources/Common/UI/Custom/RadialMenu" `
+  --mask-from "src/main/resources/Common/UI/Custom/RadialMenu"
+```
+
+Notes:
+- Produces `CommandWheelSlice0..7_{Default,Hover,Pressed}.png`.
+- Default rotation order is clockwise in 45-degree steps.
+- Use `--base-angle` to tweak orientation if slice 0 needs an offset.
+- `--mask-from` is recommended so generated textures keep the exact per-slice alpha silhouettes.
+
+Use explicit exported segments instead of rotation:
+
+```powershell
+python scripts/generate_rotated_radial_slices.py `
+  --segments-dir "C:\Users\22ale\Downloads\Untitled" `
+  --segment-pattern "Segment {n}.png" `
+  --output-dir "target/radial-textures/SegmentTest" `
+  --copy-core-from "src/main/resources/Common/UI/Custom/RadialMenu" `
+  --mask-from "src/main/resources/Common/UI/Custom/RadialMenu"
+```
+
+Notes:
+- Segment mode maps `Segment 1..8` to slice indices `0..7`.
+- Segment mode conforms each segment to the target slice canvas and applies optional mask clipping.
