@@ -373,7 +373,7 @@ $C.@PageOverlay {
     }
 
     $C.@SecondaryTextButton #RadialMenuCloseButton {
-      @Anchor = (Bottom: -16, Width: 180, Left: 370);
+      @Anchor = (Bottom: -36, Width: 180, Left: 370);
       Text: %server.radialmenu.ui.button.close;
     }
   }

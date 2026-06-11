@@ -51,6 +51,7 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
      */
     private static final int[] NEW_TEXTURE_INDEX_BY_OPTION = new int[] {6, 7, 0, 1, 2, 3, 4, 5};
     private static final double CUSTOM_TEXTURE_LAYOUT_ANGLE_OFFSET_DEGREES = 29.0;
+    static final double TEXTURE_LABEL_ANGLE_OFFSET_DEGREES = 22.5;
     private static final double CUSTOM_TEXTURE_SLOT_RADIUS = 260.0;
     private static final double CUSTOM_TEXTURE_CENTER_OFFSET_X = -6.0;
     private static final double CUSTOM_TEXTURE_CENTER_OFFSET_Y = -3.0;
@@ -565,7 +566,7 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         int labelRadius = safePositive(geometry.getLabelRadiusPx(), RadialMenuConfig.Geometry.DEFAULT_LABEL_RADIUS);
         double angleDegrees = -90 + optionIndex * 45.0;
         if (!vectorMode && !isLegacyTexturePrefix(texturePrefix)) {
-            angleDegrees += CUSTOM_TEXTURE_LAYOUT_ANGLE_OFFSET_DEGREES;
+            angleDegrees += TEXTURE_LABEL_ANGLE_OFFSET_DEGREES;
         }
         double radians = Math.toRadians(angleDegrees);
         int centerX = (int) Math.round(BASE_CENTER_X + Math.cos(radians) * labelRadius);
