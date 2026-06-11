@@ -85,7 +85,27 @@ class RadialMenuVisualResolverTest {
         );
 
         assertTrue(warned.get());
-        assertEquals(RadialMenuVisualResolver.LEGACY_TEXTURE_PREFIX, prefix);
+        assertEquals(RadialMenuVisualResolver.DEFAULT_TEXTURE_PREFIX, prefix);
+    }
+
+    @Test
+    void texturePrefixDefaultsToBuiltInTextureSet() {
+        RadialMenuConfig config = TestConfigFactory.menu(
+                "menus/example/default-texture",
+                ExecutionMode.SelectAndArm,
+                null,
+                new String[0],
+                TestConfigFactory.commandOption("config", "Config", "/tw config")
+        );
+
+        String prefix = RadialMenuVisualResolver.resolveTexturePrefix(
+                config,
+                ignored -> true,
+                ignored -> {
+                }
+        );
+
+        assertEquals(RadialMenuVisualResolver.DEFAULT_TEXTURE_PREFIX, prefix);
     }
 
     @Test
@@ -98,4 +118,3 @@ class RadialMenuVisualResolverTest {
         );
     }
 }
-

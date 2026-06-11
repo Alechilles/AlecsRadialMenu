@@ -624,14 +624,14 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
         @Nonnull
         public static RenderMode fromString(@Nullable String value) {
             if (value == null || value.isBlank()) {
-                return Vector;
+                return Texture;
             }
             for (RenderMode mode : values()) {
                 if (mode.name().equalsIgnoreCase(value.trim())) {
                     return mode;
                 }
             }
-            return Vector;
+            return Texture;
         }
     }
 
@@ -878,7 +878,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
     public static final class Visual {
         public static final int DEFAULT_BORDER_THICKNESS = 2;
 
-        private RenderMode renderMode = RenderMode.Vector;
+        private RenderMode renderMode = RenderMode.Texture;
         private Geometry geometry = Geometry.defaults();
         private int borderThicknessPx = DEFAULT_BORDER_THICKNESS;
         private LabelVisual label = LabelVisual.defaults();
@@ -895,7 +895,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
 
         @Nonnull
         public RenderMode getRenderMode() {
-            return renderMode == null ? RenderMode.Vector : renderMode;
+            return renderMode == null ? RenderMode.Texture : renderMode;
         }
 
         @Nonnull

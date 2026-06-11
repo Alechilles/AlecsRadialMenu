@@ -123,7 +123,7 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         RenderMode renderMode = visual.getRenderMode();
         boolean vectorMode = renderMode == RenderMode.Vector;
         String texturePrefix = resolveTexturePrefix(config);
-        boolean sharedOriginMode = !vectorMode && isSharedOriginTextureSet(texturePrefix);
+        boolean fullWheelTextureMode = !vectorMode && isFullWheelTextureSet(texturePrefix);
 
         applyGeometry(commandBuilder, visual.getGeometry());
         applyRingVisuals(commandBuilder, texturePrefix, visual, vectorMode);
@@ -142,7 +142,7 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
             }
 
             DisplayOption option = options[i];
-            commandBuilder.set(visualSelector + ".Visible", !vectorMode && !sharedOriginMode);
+            commandBuilder.set(visualSelector + ".Visible", !vectorMode && !fullWheelTextureMode);
             commandBuilder.set(buttonSelector + ".Visible", true);
             commandBuilder.set(borderSelector + ".Visible", vectorMode);
             commandBuilder.set(buttonSelector + ".Text", "");
@@ -283,7 +283,7 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         String hoverColor = vectorMode ? style.hoverState().fillColor() : null;
         String pressedColor = vectorMode ? style.pressedState().fillColor() : null;
 
-        if (!vectorMode && isSharedOriginTextureSet(texturePrefix)) {
+        if (!vectorMode && isFullWheelTextureSet(texturePrefix)) {
             String croppedTexturePrefix = texturePrefix + "/Cropped";
             defaultTexture = croppedTexturePrefix + "/CommandWheelSlice" + textureIndex + "_Default.png";
             hoverTexture = croppedTexturePrefix + "/CommandWheelSlice" + textureIndex + "_Hover.png";
@@ -371,8 +371,8 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         Rect base = BASE_BUTTON_RECTS[optionIndex];
         if (!vectorMode) {
             Rect hitRect;
-            if (isSharedOriginTextureSet(texturePrefix)) {
-                hitRect = resolveSharedOriginHitRect(texturePrefix, optionIndex, scale, base);
+            if (isFullWheelTextureSet(texturePrefix)) {
+                hitRect = resolveFullWheelHitRect(texturePrefix, optionIndex, scale, base);
             } else {
                 hitRect = resolveTextureModeRect(texturePrefix, optionIndex, scale, base);
             }
@@ -394,10 +394,10 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
     }
 
     @Nonnull
-    private Rect resolveSharedOriginHitRect(@Nonnull String texturePrefix,
-                                            int optionIndex,
-                                            double scale,
-                                            @Nonnull Rect fallbackBaseRect) {
+    private Rect resolveFullWheelHitRect(@Nonnull String texturePrefix,
+                                         int optionIndex,
+                                         double scale,
+                                         @Nonnull Rect fallbackBaseRect) {
         int textureIndex = resolveTextureIndex(texturePrefix, optionIndex);
         TextureMetrics metrics = resolveTextureMetrics(texturePrefix, textureIndex);
         if (metrics == null || !metrics.hasAlphaBounds()) {
@@ -470,7 +470,7 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         return RadialMenuVisualResolver.LEGACY_TEXTURE_PREFIX.equalsIgnoreCase(texturePrefix);
     }
 
-    private boolean isSharedOriginTextureSet(@Nonnull String texturePrefix) {
+    private boolean isFullWheelTextureSet(@Nonnull String texturePrefix) {
         TextureMetrics metrics = resolveTextureMetrics(texturePrefix, 0);
         return metrics != null
                 && metrics.width() == BASE_OUTER_DIAMETER

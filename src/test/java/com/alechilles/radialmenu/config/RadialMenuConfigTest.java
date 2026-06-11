@@ -61,7 +61,7 @@ class RadialMenuConfigTest {
     }
 
     @Test
-    void visualDefaultsToVectorModeWithGeometryAndStates() {
+    void visualDefaultsToTextureModeWithGeometryAndStates() {
         RadialMenuConfig config = TestConfigFactory.menu(
                 "menus/example/visual-defaults",
                 ExecutionMode.SelectAndArm,
@@ -70,7 +70,7 @@ class RadialMenuConfigTest {
                 TestConfigFactory.commandOption("first", "First", "/first")
         );
 
-        assertEquals(RenderMode.Vector, config.getVisual().getRenderMode());
+        assertEquals(RenderMode.Texture, config.getVisual().getRenderMode());
         assertEquals(640, config.getVisual().getGeometry().getOuterDiameterPx());
         assertEquals(300, config.getVisual().getGeometry().getInnerDiameterPx());
         assertEquals(234, config.getVisual().getGeometry().getLabelRadiusPx());

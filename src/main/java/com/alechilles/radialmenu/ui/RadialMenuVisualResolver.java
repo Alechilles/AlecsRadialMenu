@@ -17,10 +17,10 @@ import com.alechilles.radialmenu.config.RadialMenuConfig.OptionVisualOverride;
 import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StateColors;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StatePalette;
-import com.alechilles.radialmenu.config.RadialMenuConfig.TexturePreset;
 import com.alechilles.radialmenu.config.RadialMenuConfig.TextureSet;
 
 public final class RadialMenuVisualResolver {
+    public static final String DEFAULT_TEXTURE_PREFIX = "RadialMenu/Default";
     public static final String LEGACY_TEXTURE_PREFIX = "RadialMenu";
 
     private static final String[] SLICE_STATES = new String[] {"Default", "Hover", "Pressed"};
@@ -90,20 +90,16 @@ public final class RadialMenuVisualResolver {
         TextureSet textureSet = config.getVisual().getTextureSet();
         String prefix = normalizePrefix(textureSet.getPrefix());
         if (prefix == null || prefix.isBlank()) {
-            TexturePreset preset = textureSet.getPreset();
-            if (preset == TexturePreset.LegacyDefault) {
-                return LEGACY_TEXTURE_PREFIX;
-            }
-            return LEGACY_TEXTURE_PREFIX;
+            return DEFAULT_TEXTURE_PREFIX;
         }
 
         if (prefixCompletenessCheck != null && !prefixCompletenessCheck.test(prefix)) {
             if (warningSink != null) {
                 warningSink.accept(
-                        "Texture set prefix '" + prefix + "' is incomplete. Falling back to '" + LEGACY_TEXTURE_PREFIX + "'."
+                        "Texture set prefix '" + prefix + "' is incomplete. Falling back to '" + DEFAULT_TEXTURE_PREFIX + "'."
                 );
             }
-            return LEGACY_TEXTURE_PREFIX;
+            return DEFAULT_TEXTURE_PREFIX;
         }
 
         return prefix;
@@ -186,4 +182,3 @@ public final class RadialMenuVisualResolver {
                                        @Nonnull ResolvedState disabledState) {
     }
 }
-

@@ -7,7 +7,6 @@
   "ExecutionMode": "SelectAndArm",
   "DefaultOptionId": "config1",
   "Visual": {
-    "RenderMode": "Texture",
     "Geometry": {
       "OuterDiameterPx": 640,
       "InnerDiameterPx": 300,
@@ -44,9 +43,6 @@
         "TextColor": "#9eafbf(0.85)",
         "BorderColor": "#182127(0.70)"
       }
-    },
-    "TextureSet": {
-      "Prefix": "RadialMenu/Custom/SharedOrigin"
     }
   },
   "Options": [

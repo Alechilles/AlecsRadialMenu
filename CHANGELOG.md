@@ -1,11 +1,11 @@
 # Changelog
 
 ## 0.2.0
-- Added configurable radial menu visuals, including texture-set prefixes, geometry, state colors, labels, and vector/custom texture support.
-- Added a shared-origin custom wheel style with aligned Figma-exported slices, focused hover textures, cropped client-side hover hit targets, and a matching center panel.
+- Added configurable radial menu visuals, including texture-set prefixes, geometry, state colors, labels, and texture/vector render modes.
+- Added the default texture wheel with aligned Figma-exported slices, focused hover textures, cropped client-side hover hit targets, and a matching center panel.
 - Added menu catalog validation coverage for visual configuration and texture completeness.
 - Added HStats integration and asset-pack coordination support.
-- Updated the example radial menu to use the new shared-origin visual style.
+- Updated the example radial menu to use the new default texture wheel.
 - Fixed Hytale Update 5 compatibility for JOML vectors and player messaging.
 
 ## 0.1.0

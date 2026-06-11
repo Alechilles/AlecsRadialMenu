@@ -20,10 +20,10 @@ Standalone radial menu framework mod for Hytale.
 - `ExecutionMode` (`SelectAndArm` default)
 - `DefaultOptionId` (optional)
 - `Options[]` (required, 1..8)
-- `Visual` (optional, defaults to vector mode)
+- `Visual` (optional, defaults to the built-in texture wheel)
 
 ### `Visual` Fields
-- `RenderMode`: `Vector` (default) or `Texture`
+- `RenderMode`: `Texture` (default) or `Vector` (legacy/experimental)
 - `Geometry`:
   - `OuterDiameterPx`
   - `InnerDiameterPx`
@@ -35,8 +35,8 @@ Standalone radial menu framework mod for Hytale.
   - `Default`, `Hover`, `Pressed`, `Selected`, `Disabled`
   - each state supports `FillColor`, `TextColor`, `BorderColor`
 - `TextureSet`:
-  - `Preset` (`LegacyDefault`)
-  - `Prefix` (custom texture set path using the same naming convention)
+  - `Prefix` (optional custom texture set path using the same naming convention)
+  - omitted `Prefix` uses the built-in `RadialMenu/Default` texture wheel
 
 ### Option Types
 - `ExecuteCommand`

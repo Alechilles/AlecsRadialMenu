@@ -18,10 +18,8 @@ import com.alechilles.radialmenu.config.RadialMenuConfig.ExecuteCommandOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.InvokeRegisteredActionOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
 import com.alechilles.radialmenu.config.RadialMenuConfig.OptionVisualOverride;
-import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StateColors;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StatePalette;
-import com.alechilles.radialmenu.config.RadialMenuConfig.TextureSet;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Visual;
 import com.hypixel.hytale.logger.HytaleLogger;
 
@@ -183,13 +181,6 @@ public final class RadialMenuCatalog {
 
         validateStatePalette("Visual.States", visual.getStates(), issues, false);
 
-        if (visual.getRenderMode() == RenderMode.Texture) {
-            TextureSet textureSet = visual.getTextureSet();
-            String prefix = textureSet.getPrefix();
-            if ((prefix == null || prefix.isBlank()) && textureSet.getPreset() == null) {
-                issues.add("Visual.TextureSet must specify Preset or Prefix in Texture mode.");
-            }
-        }
     }
 
     private void validateOptionVisualOverride(@Nonnull Option option, @Nonnull List<String> issues) {
