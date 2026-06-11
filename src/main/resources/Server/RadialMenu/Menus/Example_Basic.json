@@ -6,157 +6,48 @@
   ],
   "ExecutionMode": "SelectAndArm",
   "DefaultOptionId": "config1",
-  "Visual": {
-    "Geometry": {
-      "OuterDiameterPx": 640,
-      "InnerDiameterPx": 300,
-      "LabelRadiusPx": 234,
-      "CenterDiameterPx": 300
-    },
-    "BorderThicknessPx": 2,
-    "Label": {
-      "FontSize": 15
-    },
-    "States": {
-      "Default": {
-        "FillColor": "#3b5263",
-        "TextColor": "#d6e0ec",
-        "BorderColor": "#1b2730"
-      },
-      "Hover": {
-        "FillColor": "#4f7089",
-        "TextColor": "#ffffff",
-        "BorderColor": "#2c4252"
-      },
-      "Pressed": {
-        "FillColor": "#2d4151",
-        "TextColor": "#ffffff",
-        "BorderColor": "#17232c"
-      },
-      "Selected": {
-        "FillColor": "#5d829f",
-        "TextColor": "#ffffff",
-        "BorderColor": "#30495b"
-      },
-      "Disabled": {
-        "FillColor": "#26343f(0.70)",
-        "TextColor": "#9eafbf(0.85)",
-        "BorderColor": "#182127(0.70)"
-      }
-    }
-  },
   "Options": [
     {
       "Type": "ExecuteCommand",
       "Id": "config1",
       "Label": "Test 1",
-      "Command": "/tw config",
-      "VisualOverride": {
-        "LabelFontSize": 16,
-        "States": {
-          "Selected": {
-            "FillColor": "#7ca65f",
-            "TextColor": "#ffffff",
-            "BorderColor": "#3e5e2f"
-          }
-        }
-      }
+      "Command": "/tw config"
     },
     {
       "Type": "ExecuteCommand",
       "Id": "config2",
       "Label": "Test 2",
-      "Command": "/tw config",
-      "VisualOverride": {
-        "LabelFontSize": 16,
-        "States": {
-          "Selected": {
-            "FillColor": "#7ca65f",
-            "TextColor": "#ffffff",
-            "BorderColor": "#3e5e2f"
-          }
-        }
-      }
+      "Command": "/tw config"
     },
     {
       "Type": "ExecuteCommand",
       "Id": "config3",
       "Label": "Test 3",
-      "Command": "/tw config",
-      "VisualOverride": {
-        "LabelFontSize": 16,
-        "States": {
-          "Selected": {
-            "FillColor": "#7ca65f",
-            "TextColor": "#ffffff",
-            "BorderColor": "#3e5e2f"
-          }
-        }
-      }
+      "Command": "/tw config"
     },
     {
       "Type": "ExecuteCommand",
       "Id": "config4",
       "Label": "Test 4",
-      "Command": "/tw config",
-      "VisualOverride": {
-        "LabelFontSize": 16,
-        "States": {
-          "Selected": {
-            "FillColor": "#7ca65f",
-            "TextColor": "#ffffff",
-            "BorderColor": "#3e5e2f"
-          }
-        }
-      }
+      "Command": "/tw config"
     },
     {
       "Type": "ExecuteCommand",
       "Id": "config5",
       "Label": "Test 5",
-      "Command": "/tw config",
-      "VisualOverride": {
-        "LabelFontSize": 16,
-        "States": {
-          "Selected": {
-            "FillColor": "#7ca65f",
-            "TextColor": "#ffffff",
-            "BorderColor": "#3e5e2f"
-          }
-        }
-      }
+      "Command": "/tw config"
     },
     {
       "Type": "ExecuteCommand",
       "Id": "config6",
       "Label": "Test 6",
-      "Command": "/tw config",
-      "VisualOverride": {
-        "LabelFontSize": 16,
-        "States": {
-          "Selected": {
-            "FillColor": "#7ca65f",
-            "TextColor": "#ffffff",
-            "BorderColor": "#3e5e2f"
-          }
-        }
-      }
+      "Command": "/tw config"
     },
     {
       "Type": "ExecuteCommand",
       "Id": "config7",
       "Label": "Test 7",
-      "Command": "/tw config",
-      "VisualOverride": {
-        "LabelFontSize": 16,
-        "States": {
-          "Selected": {
-            "FillColor": "#7ca65f",
-            "TextColor": "#ffffff",
-            "BorderColor": "#3e5e2f"
-          }
-        }
-      }
+      "Command": "/tw config"
     },
     {
       "Type": "InvokeRegisteredAction",

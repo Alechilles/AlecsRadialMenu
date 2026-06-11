@@ -3,6 +3,7 @@ package com.alechilles.radialmenu.runtime;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,21 @@ import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
 import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
 
 class RadialMenuCatalogValidationTest {
+    @Test
+    void bundledExampleUsesDefaultTextureVisualsWithoutRedundantOverrides() throws IOException {
+        String example = new String(
+                RadialMenuCatalogValidationTest.class
+                        .getResourceAsStream("/Server/RadialMenu/Menus/Example_Basic.json")
+                        .readAllBytes()
+        );
+
+        assertFalse(example.contains("\"Visual\""));
+        assertFalse(example.contains("\"VisualOverride\""));
+        assertFalse(example.contains("\"FillColor\""));
+        assertFalse(example.contains("\"TextureSet\""));
+        assertFalse(example.contains("\"RenderMode\""));
+    }
+
     @Test
     void validateAcceptsWellFormedMenu() {
         RadialMenuCatalog catalog = new RadialMenuCatalog();
