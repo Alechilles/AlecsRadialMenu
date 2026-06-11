@@ -7,6 +7,8 @@
 - Added HStats integration and asset-pack coordination support.
 - Updated the example radial menu to use the new default texture wheel.
 - Fixed Hytale Update 5 compatibility for JOML vectors and player messaging.
+- Fixed default wheel label alignment around the slice centers.
+- Fixed the close button layout so its full visible area can hover and click.
 
 ## 0.1.0
 - Initial standalone radial menu module.

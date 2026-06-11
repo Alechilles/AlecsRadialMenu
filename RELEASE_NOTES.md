@@ -16,6 +16,8 @@ This release expands Alec's Radial Menu into a configurable visual framework and
 ## Fixed
 - Updated compatibility for Hytale Update 5 APIs, including JOML vectors and player messaging.
 - Reworked hover handling to use client-side button states, avoiding sticky hovered slices.
+- Re-centered default wheel labels around their slice centers.
+- Fixed the close button hit bounds so the full visible button can hover and click.
 
 ## Compatibility
 - Hytale: 0.5.x
