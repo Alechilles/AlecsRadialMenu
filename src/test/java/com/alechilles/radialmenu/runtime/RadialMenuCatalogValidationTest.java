@@ -28,6 +28,8 @@ class RadialMenuCatalogValidationTest {
         assertFalse(example.contains("\"FillColor\""));
         assertFalse(example.contains("\"TextureSet\""));
         assertFalse(example.contains("\"RenderMode\""));
+        assertFalse(example.contains("\"Test "));
+        assertFalse(example.contains("/tw config"));
     }
 
     @Test

@@ -1,53 +1,41 @@
 {
-  "$Comment": "Example radial menu keyed by this asset path/name.",
+  "$Comment": "Example radial menu using the default texture wheel.",
   "Enabled": true,
   "ItemIds": [
     "Alec_Radial_Menu_Example"
   ],
   "ExecutionMode": "SelectAndArm",
-  "DefaultOptionId": "config1",
+  "DefaultOptionId": "help",
   "Options": [
     {
       "Type": "ExecuteCommand",
-      "Id": "config1",
-      "Label": "Test 1",
-      "Command": "/tw config"
+      "Id": "help",
+      "Label": "Help",
+      "Command": "/help"
     },
     {
       "Type": "ExecuteCommand",
-      "Id": "config2",
-      "Label": "Test 2",
-      "Command": "/tw config"
+      "Id": "spawn",
+      "Label": "Spawn",
+      "Command": "/spawn"
     },
     {
       "Type": "ExecuteCommand",
-      "Id": "config3",
-      "Label": "Test 3",
-      "Command": "/tw config"
+      "Id": "home",
+      "Label": "Home",
+      "Command": "/home"
     },
     {
       "Type": "ExecuteCommand",
-      "Id": "config4",
-      "Label": "Test 4",
-      "Command": "/tw config"
+      "Id": "set_home",
+      "Label": "Set Home",
+      "Command": "/sethome"
     },
     {
       "Type": "ExecuteCommand",
-      "Id": "config5",
-      "Label": "Test 5",
-      "Command": "/tw config"
-    },
-    {
-      "Type": "ExecuteCommand",
-      "Id": "config6",
-      "Label": "Test 6",
-      "Command": "/tw config"
-    },
-    {
-      "Type": "ExecuteCommand",
-      "Id": "config7",
-      "Label": "Test 7",
-      "Command": "/tw config"
+      "Id": "hello",
+      "Label": "Say Hello",
+      "Command": "/say Hello from radial menu"
     },
     {
       "Type": "InvokeRegisteredAction",
