@@ -7,11 +7,13 @@ This release expands Alec's Radial Menu into a configurable visual framework and
 - Configurable radial menu visuals, including render modes, geometry, labels, state colors, and texture-set prefixes.
 - Default wheel textures with focused hover states, cropped client-side hit targets, and a matching center panel.
 - HStats integration and asset-pack coordination support.
+- A telemetry consent icon and stats descriptor so Alec's Radial Menu can opt into hosted usage summaries through the shared telemetry consent flow.
 - Validation coverage for visual configuration and texture completeness.
 
 ## Changed
 - Updated the example radial menu to use the default texture wheel without an explicit texture prefix, and populated it with practical starter commands.
 - Moved texture generator examples to scratch output paths outside packaged resources.
+- Updated hosted telemetry stats routing to the current Alec telemetry ingest endpoint used by the shared rollout.
 
 ## Fixed
 - Updated compatibility for Hytale Update 5 APIs, including JOML vectors and player messaging.

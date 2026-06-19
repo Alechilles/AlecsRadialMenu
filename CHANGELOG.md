@@ -5,7 +5,9 @@
 - Added the default texture wheel with aligned Figma-exported slices, focused hover textures, cropped client-side hover hit targets, and a matching center panel.
 - Added menu catalog validation coverage for visual configuration and texture completeness.
 - Added HStats integration and asset-pack coordination support.
+- Added a telemetry consent icon and stats descriptor so Alec's Radial Menu can opt into hosted usage summaries through the shared telemetry consent flow.
 - Updated the example radial menu to use the new default texture wheel with practical starter commands.
+- Updated hosted telemetry stats routing to the current Alec telemetry ingest endpoint used by the shared rollout.
 - Fixed Hytale Update 5 compatibility for JOML vectors and player messaging.
 - Fixed default wheel label alignment around the slice centers.
 - Fixed the close button layout so its full visible area can hover and click.
