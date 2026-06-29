@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "projectId": "alecs-radial-menu",
+  "displayName": "Alec's Radial Menu",
+  "telemetry": {
+    "stats": {
+      "supported": true
+    }
+  },
+  "ui": {
+    "iconTexturePath": "AlecsRadialMenu/Telemetry/ConsentIcon.png"
+  },
+  "defaults": {
+    "enabled": true,
+    "destinationMode": "hosted"
+  },
+  "hosted": {
+    "projectKey": "proj_rLi5gWQV6ZzhM1biK7gm38Ws"
+  }
+}

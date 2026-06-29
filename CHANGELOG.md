@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Moved the telemetry descriptor to `Server/Telemetry/project.json`, updated it to the current stats descriptor schema, and removed dev endpoint overrides so Alec's Telemetry uses its default hosted endpoint.
+
 ## 0.2.0
 - Added configurable radial menu visuals, including texture-set prefixes, geometry, state colors, labels, and texture/vector render modes.
 - Added the default texture wheel with aligned Figma-exported slices, focused hover textures, cropped client-side hover hit targets, and a matching center panel.
