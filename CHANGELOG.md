@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Fixed armed radial interactions failing because their active Hytale interaction context was used after its tick ended.
 - Added native `RunInteraction` radial options that can execute Hytale `RootInteraction` assets immediately or arm them for the radial item's next primary click.
 - Moved the telemetry descriptor to `Server/Telemetry/project.json`, updated it to the current stats descriptor schema, and removed dev endpoint overrides so Alec's Telemetry uses its default hosted endpoint.
 
