@@ -11,10 +11,12 @@ import com.alechilles.radialmenu.config.RadialMenuConfig.InvokeRegisteredActionO
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
 import com.alechilles.radialmenu.config.RadialMenuConfig.OptionVisualOverride;
 import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
+import com.alechilles.radialmenu.config.RadialMenuConfig.RunInteractionOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StateColors;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StatePalette;
 import com.alechilles.radialmenu.config.RadialMenuConfig.TextureSet;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Visual;
+import com.hypixel.hytale.protocol.InteractionType;
 
 public final class TestConfigFactory {
     private TestConfigFactory() {
@@ -56,6 +58,18 @@ public final class TestConfigFactory {
         setField(Option.class, option, "label", label);
         setField(InvokeRegisteredActionOption.class, option, "actionId", actionId);
         setField(InvokeRegisteredActionOption.class, option, "payload", payload == null ? Map.of() : payload);
+        return option;
+    }
+
+    public static RunInteractionOption interactionOption(String id,
+                                                         String label,
+                                                         String rootInteraction,
+                                                         InteractionType interactionType) {
+        RunInteractionOption option = instantiate(RunInteractionOption.class);
+        setField(Option.class, option, "id", id);
+        setField(Option.class, option, "label", label);
+        setField(RunInteractionOption.class, option, "rootInteraction", rootInteraction);
+        setField(RunInteractionOption.class, option, "interactionType", interactionType);
         return option;
     }
 

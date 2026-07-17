@@ -14,6 +14,7 @@ import com.alechilles.radialmenu.config.RadialMenuConfig.ExecutionMode;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Feedback;
 import com.alechilles.radialmenu.config.RadialMenuConfig.InvokeRegisteredActionOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
+import com.alechilles.radialmenu.config.RadialMenuConfig.RunInteractionOption;
 import com.alechilles.radialmenu.localization.RadialMenuLocalizedText;
 import com.alechilles.radialmenu.ui.RadialMenuPage;
 import com.hypixel.hytale.assetstore.map.DefaultAssetMap;
@@ -21,6 +22,7 @@ import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.Message;
+import com.hypixel.hytale.server.core.entity.InteractionContext;
 import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.PlayerRef;
 import com.hypixel.hytale.server.core.universe.world.World;
@@ -31,6 +33,7 @@ public final class RadialMenuRuntimeService {
     private final RadialMenuSessionStore sessions;
     private final RadialMenuActionRegistry actionRegistry;
     private final PlayerCommandDispatcher commandDispatcher;
+    private final RadialMenuInteractionRunner interactionRunner;
     @Nullable
     private final HytaleLogger logger;
 
@@ -39,10 +42,20 @@ public final class RadialMenuRuntimeService {
                                     @Nonnull RadialMenuActionRegistry actionRegistry,
                                     @Nonnull PlayerCommandDispatcher commandDispatcher,
                                     @Nullable HytaleLogger logger) {
+        this(catalog, sessions, actionRegistry, commandDispatcher, new HytaleInteractionRunner(logger), logger);
+    }
+
+    RadialMenuRuntimeService(@Nonnull RadialMenuCatalog catalog,
+                             @Nonnull RadialMenuSessionStore sessions,
+                             @Nonnull RadialMenuActionRegistry actionRegistry,
+                             @Nonnull PlayerCommandDispatcher commandDispatcher,
+                             @Nonnull RadialMenuInteractionRunner interactionRunner,
+                             @Nullable HytaleLogger logger) {
         this.catalog = catalog;
         this.sessions = sessions;
         this.actionRegistry = actionRegistry;
         this.commandDispatcher = commandDispatcher;
+        this.interactionRunner = interactionRunner;
         this.logger = logger;
     }
 
@@ -130,6 +143,14 @@ public final class RadialMenuRuntimeService {
                                    @Nullable String menuKey,
                                    @Nullable ExecutionMode modeOverride,
                                    @Nonnull String source) {
+        return executeSelected(player, menuKey, modeOverride, source, null);
+    }
+
+    public boolean executeSelected(@Nullable Player player,
+                                   @Nullable String menuKey,
+                                   @Nullable ExecutionMode modeOverride,
+                                   @Nonnull String source,
+                                   @Nullable InteractionContext activeContext) {
         refreshCatalogFromAssetStore();
         String normalizedMenuKey = RadialMenuCatalog.normalizeKey(menuKey);
         if (player == null) {
@@ -156,7 +177,15 @@ public final class RadialMenuRuntimeService {
         }
 
         sessions.setSelectedOptionId(player.getUuid(), normalizedMenuKey, selected.getId());
-        return executeOption(player, normalizedMenuKey, menu, selected, modeOverride, source + ".execute");
+        return executeOption(
+                player,
+                normalizedMenuKey,
+                menu,
+                selected,
+                modeOverride,
+                source + ".execute",
+                activeContext
+        );
     }
 
     private boolean handleOptionSelection(@Nonnull Player player,
@@ -184,7 +213,7 @@ public final class RadialMenuRuntimeService {
             return true;
         }
 
-        return executeOption(player, menuKey, menu, option, modeOverride, source + ".selectAndRun");
+        return executeOption(player, menuKey, menu, option, modeOverride, source + ".selectAndRun", null);
     }
 
     private boolean executeOption(@Nonnull Player player,
@@ -192,7 +221,8 @@ public final class RadialMenuRuntimeService {
                                   @Nonnull RadialMenuConfig menu,
                                   @Nonnull Option option,
                                   @Nullable ExecutionMode modeOverride,
-                                  @Nonnull String source) {
+                                  @Nonnull String source,
+                                  @Nullable InteractionContext activeContext) {
         boolean executed;
 
         if (option instanceof ExecuteCommandOption executeCommandOption) {
@@ -243,6 +273,37 @@ public final class RadialMenuRuntimeService {
             }
             if (!executed) {
                 warnAndLog(player, "radialmenu.warning.execute.handlerFailed", "Action handler returned false: " + actionId, actionId);
+                return false;
+            }
+        } else if (option instanceof RunInteractionOption runInteractionOption) {
+            String rootInteraction = runInteractionOption.getRootInteraction();
+            if (rootInteraction == null || rootInteraction.isBlank()) {
+                warnAndLog(
+                        player,
+                        "radialmenu.warning.execute.interactionBlank",
+                        "Blank RootInteraction on menu: " + menuKey
+                );
+                return false;
+            }
+            try {
+                executed = interactionRunner.run(player, runInteractionOption, activeContext);
+            } catch (Throwable ex) {
+                if (logger != null) {
+                    logger.at(Level.WARNING).withCause(ex).log(
+                            "RadialMenu interaction runner threw for root '" + rootInteraction
+                                    + "' on menu '" + menuKey + "'."
+                    );
+                }
+                warn(player, "radialmenu.warning.execute.interactionFailed", rootInteraction);
+                return false;
+            }
+            if (!executed) {
+                warnAndLog(
+                        player,
+                        "radialmenu.warning.execute.interactionFailed",
+                        "RootInteraction execution failed: " + rootInteraction,
+                        rootInteraction
+                );
                 return false;
             }
         } else {

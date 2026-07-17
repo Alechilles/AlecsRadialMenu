@@ -13,6 +13,7 @@ import com.alechilles.radialmenu.config.RadialMenuConfig;
 import com.alechilles.radialmenu.config.RadialMenuConfig.ExecutionMode;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
 import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
+import com.hypixel.hytale.protocol.InteractionType;
 
 class RadialMenuCatalogValidationTest {
     @Test
@@ -30,6 +31,8 @@ class RadialMenuCatalogValidationTest {
         assertFalse(example.contains("\"RenderMode\""));
         assertFalse(example.contains("\"Test "));
         assertFalse(example.contains("/tw config"));
+        assertTrue(example.contains("\"Type\": \"RunInteraction\""));
+        assertTrue(example.contains("\"RootInteraction\": \"Root_Unarmed_Swing_Left\""));
     }
 
     @Test
@@ -41,7 +44,13 @@ class RadialMenuCatalogValidationTest {
                 "config",
                 new String[] {"Alec_Radial_Menu_Example"},
                 TestConfigFactory.commandOption("config", "/tw config", "/tw config"),
-                TestConfigFactory.actionOption("ping", "Ping", "Example.Ping", java.util.Map.of("k", "v"))
+                TestConfigFactory.actionOption("ping", "Ping", "Example.Ping", java.util.Map.of("k", "v")),
+                TestConfigFactory.interactionOption(
+                        "swing",
+                        "Swing",
+                        "Root_Unarmed_Swing_Left",
+                        InteractionType.Primary
+                )
         );
 
         List<String> issues = catalog.validate(config);
@@ -92,6 +101,28 @@ class RadialMenuCatalogValidationTest {
         List<String> issues = catalog.validate(config);
         assertTrue(issues.stream().anyMatch(x -> x.contains("blank Command")));
         assertTrue(issues.stream().anyMatch(x -> x.contains("blank ActionId")));
+    }
+
+    @Test
+    void validateRejectsBlankInteractionAndEquippedType() {
+        RadialMenuCatalog catalog = new RadialMenuCatalog();
+        RadialMenuConfig config = TestConfigFactory.menu(
+                "example/interaction-invalid",
+                ExecutionMode.SelectAndRun,
+                null,
+                new String[0],
+                TestConfigFactory.interactionOption("blank", "Blank", " ", InteractionType.Primary),
+                TestConfigFactory.interactionOption(
+                        "equipped",
+                        "Equipped",
+                        "Root_Unarmed_Swing_Left",
+                        InteractionType.Equipped
+                )
+        );
+
+        List<String> issues = catalog.validate(config);
+        assertTrue(issues.stream().anyMatch(x -> x.contains("blank RootInteraction")));
+        assertTrue(issues.stream().anyMatch(x -> x.contains("cannot use InteractionType Equipped")));
     }
 
     @Test

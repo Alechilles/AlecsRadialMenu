@@ -10,6 +10,8 @@ import com.alechilles.radialmenu.TestConfigFactory;
 import com.alechilles.radialmenu.config.RadialMenuConfig.ExecutionMode;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
 import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
+import com.alechilles.radialmenu.config.RadialMenuConfig.RunInteractionOption;
+import com.hypixel.hytale.protocol.InteractionType;
 
 class RadialMenuConfigTest {
     @Test
@@ -80,5 +82,25 @@ class RadialMenuConfigTest {
         assertNotNull(config.getVisual().getStates().getPressedState().getFillColor());
         assertNotNull(config.getVisual().getStates().getSelectedState().getFillColor());
         assertNotNull(config.getVisual().getStates().getDisabledState().getFillColor());
+    }
+
+    @Test
+    void runInteractionOptionDefaultsToPrimaryAndExposesRootAsset() {
+        RunInteractionOption defaultType = TestConfigFactory.interactionOption(
+                "swing",
+                "Swing",
+                "Root_Unarmed_Swing_Left",
+                null
+        );
+        RunInteractionOption secondaryType = TestConfigFactory.interactionOption(
+                "shove",
+                "Shove",
+                "Root_Common_Offhand_Shove",
+                InteractionType.Secondary
+        );
+
+        assertEquals("Root_Unarmed_Swing_Left", defaultType.getRootInteraction());
+        assertEquals(InteractionType.Primary, defaultType.getInteractionType());
+        assertEquals(InteractionType.Secondary, secondaryType.getInteractionType());
     }
 }

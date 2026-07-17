@@ -45,6 +45,13 @@
       "Payload": {
         "source": "example-menu"
       }
+    },
+    {
+      "Type": "RunInteraction",
+      "Id": "left_swing",
+      "Label": "Left Swing",
+      "RootInteraction": "Root_Unarmed_Swing_Left",
+      "InteractionType": "Primary"
     }
   ]
 }

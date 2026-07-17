@@ -10,6 +10,7 @@ Standalone radial menu framework mod for Hytale.
 - Built-in option action types:
   - `ExecuteCommand`
   - `InvokeRegisteredAction`
+  - `RunInteraction`
 - Execution modes:
   - `SelectAndArm` (menu click selects only; execute on `ExecuteSelected`)
   - `SelectAndRun` (menu click executes immediately and updates selection)
@@ -43,6 +44,25 @@ Standalone radial menu framework mod for Hytale.
   - `Id`, optional `Label`/`LabelKey`, `Command`, optional `VisualOverride`
 - `InvokeRegisteredAction`
   - `Id`, optional `Label`/`LabelKey`, `ActionId`, optional `Payload`, optional `VisualOverride`
+- `RunInteraction`
+  - `Id`, optional `Label`/`LabelKey`, `RootInteraction`, optional `InteractionType`, optional `VisualOverride`
+  - `RootInteraction` references a Hytale `RootInteraction` asset.
+  - `InteractionType` defaults to `Primary`; `Equipped` is unsupported because it requires an equipment slot.
+  - With `SelectAndRun`, selecting the option starts a standalone interaction chain immediately.
+  - With `SelectAndArm`, selecting the option arms it and `ExecuteSelected` enters the root through the active item interaction context.
+  - For an armed option, the active binding supplies the interaction type (normally `Primary`); the configured `InteractionType` applies to standalone execution.
+
+Example:
+
+```json
+{
+  "Type": "RunInteraction",
+  "Id": "left_swing",
+  "Label": "Left Swing",
+  "RootInteraction": "Root_Unarmed_Swing_Left",
+  "InteractionType": "Primary"
+}
+```
 
 ### `VisualOverride` Fields (Option)
 - `LabelFontSize` (optional)

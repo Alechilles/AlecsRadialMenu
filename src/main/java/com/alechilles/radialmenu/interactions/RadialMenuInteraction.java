@@ -107,7 +107,13 @@ public final class RadialMenuInteraction extends SimpleInteraction {
         final boolean[] executed = new boolean[] {false};
         commandBuffer.run(store -> {
             if (isExecuteSelectedCommand(commandId)) {
-                executed[0] = runtimeService.executeSelected(player, resolvedMenuKey, modeOverride, "interaction");
+                executed[0] = runtimeService.executeSelected(
+                        player,
+                        resolvedMenuKey,
+                        modeOverride,
+                        "interaction",
+                        context
+                );
                 return;
             }
             executed[0] = runtimeService.openMenu(player, resolvedMenuKey, modeOverride, "interaction");

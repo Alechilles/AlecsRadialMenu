@@ -1,5 +1,5 @@
 {
-  "$Comment": "Example radial-menu tool. Primary opens menu, secondary executes selected option.",
+  "$Comment": "Example radial-menu tool. Primary executes the selected option, secondary opens the menu.",
   "TranslationProperties": {
     "Name": "server.items.Alec_Radial_Menu_Example.name",
     "Description": "server.items.Alec_Radial_Menu_Example.description"

@@ -18,10 +18,12 @@ import com.alechilles.radialmenu.config.RadialMenuConfig.ExecuteCommandOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.InvokeRegisteredActionOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
 import com.alechilles.radialmenu.config.RadialMenuConfig.OptionVisualOverride;
+import com.alechilles.radialmenu.config.RadialMenuConfig.RunInteractionOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StateColors;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StatePalette;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Visual;
 import com.hypixel.hytale.logger.HytaleLogger;
+import com.hypixel.hytale.protocol.InteractionType;
 
 public final class RadialMenuCatalog {
     public static final int MAX_OPTIONS = 8;
@@ -127,6 +129,17 @@ public final class RadialMenuCatalog {
                 if (invokeRegisteredActionOption.getActionId() == null
                         || invokeRegisteredActionOption.getActionId().isBlank()) {
                     issues.add("InvokeRegisteredAction option '" + option.getId() + "' has blank ActionId.");
+                }
+                continue;
+            }
+            if (option instanceof RunInteractionOption runInteractionOption) {
+                if (runInteractionOption.getRootInteraction() == null
+                        || runInteractionOption.getRootInteraction().isBlank()) {
+                    issues.add("RunInteraction option '" + option.getId() + "' has blank RootInteraction.");
+                }
+                if (runInteractionOption.getInteractionType() == InteractionType.Equipped) {
+                    issues.add("RunInteraction option '" + option.getId()
+                            + "' cannot use InteractionType Equipped without an equipment slot.");
                 }
                 continue;
             }

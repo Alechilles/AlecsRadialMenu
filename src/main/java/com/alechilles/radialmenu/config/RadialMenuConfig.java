@@ -21,12 +21,14 @@ import com.hypixel.hytale.codec.ExtraInfo;
 import com.hypixel.hytale.codec.KeyedCodec;
 import com.hypixel.hytale.codec.builder.BuilderCodec;
 import com.hypixel.hytale.codec.codecs.array.ArrayCodec;
+import com.hypixel.hytale.codec.codecs.EnumCodec;
 import com.hypixel.hytale.codec.codecs.map.MapCodec;
 import com.hypixel.hytale.codec.lookup.StringCodecMapCodec;
 import com.hypixel.hytale.codec.schema.SchemaContext;
 import com.hypixel.hytale.codec.schema.config.Schema;
 import com.hypixel.hytale.codec.schema.config.StringSchema;
 import com.hypixel.hytale.math.codec.Vector3dArrayCodec;
+import com.hypixel.hytale.protocol.InteractionType;
 import org.joml.Vector3d;
 
 public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultAssetMap<String, RadialMenuConfig>> {
@@ -67,6 +69,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
 
     private static final Codec<String> SOUND_EVENT_CODEC = assetRefCodec("SoundEvent");
     private static final Codec<String> PARTICLE_SYSTEM_CODEC = assetRefCodec("ParticleSystem");
+    private static final Codec<String> ROOT_INTERACTION_CODEC = assetRefCodec("RootInteraction");
     private static final Codec<Vector3d> VECTOR3D_CODEC = new Vector3dArrayCodec();
 
     public static final BuilderCodec<Feedback> FEEDBACK_CODEC = BuilderCodec.builder(Feedback.class, Feedback::new)
@@ -339,6 +342,24 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     .add()
                     .build();
 
+    private static final BuilderCodec<RunInteractionOption> RUN_INTERACTION_OPTION_CODEC =
+            BuilderCodec.builder(RunInteractionOption.class, RunInteractionOption::new, OPTION_BASE_CODEC)
+                    .<String>append(
+                            new KeyedCodec<>("RootInteraction", ROOT_INTERACTION_CODEC),
+                            (option, value) -> option.rootInteraction = value,
+                            option -> option.rootInteraction
+                    )
+                    .add()
+                    .<InteractionType>append(
+                            new KeyedCodec<>("InteractionType", new EnumCodec<>(InteractionType.class), false),
+                            (option, value) -> option.interactionType = value == null
+                                    ? InteractionType.Primary
+                                    : value,
+                            option -> option.getInteractionType()
+                    )
+                    .add()
+                    .build();
+
     public static final StringCodecMapCodec<Option, BuilderCodec<? extends Option>> OPTION_CODEC =
             new StringCodecMapCodec<>("Type") {
             };
@@ -350,6 +371,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                 InvokeRegisteredActionOption.class,
                 INVOKE_REGISTERED_ACTION_OPTION_CODEC
         );
+        OPTION_CODEC.register("RunInteraction", RunInteractionOption.class, RUN_INTERACTION_OPTION_CODEC);
     }
 
     public static final ArrayCodec<Option> OPTION_ARRAY_CODEC = new ArrayCodec<>(OPTION_CODEC, Option[]::new);
@@ -581,6 +603,21 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
         @Nonnull
         public Map<String, String> getPayload() {
             return payload;
+        }
+    }
+
+    public static final class RunInteractionOption extends Option {
+        private String rootInteraction;
+        private InteractionType interactionType = InteractionType.Primary;
+
+        @Nullable
+        public String getRootInteraction() {
+            return rootInteraction;
+        }
+
+        @Nonnull
+        public InteractionType getInteractionType() {
+            return interactionType == null ? InteractionType.Primary : interactionType;
         }
     }
 

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Added native `RunInteraction` radial options that can execute Hytale `RootInteraction` assets immediately or arm them for the radial item's next primary click.
 - Moved the telemetry descriptor to `Server/Telemetry/project.json`, updated it to the current stats descriptor schema, and removed dev endpoint overrides so Alec's Telemetry uses its default hosted endpoint.
 
 ## 0.2.0
