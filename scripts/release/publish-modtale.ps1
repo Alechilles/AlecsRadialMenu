@@ -203,12 +203,39 @@ $versionFieldName = if ([string]::IsNullOrWhiteSpace($config.modtale.versionFiel
 $changelogFieldName = if ([string]::IsNullOrWhiteSpace($config.modtale.changelogFieldName)) { "changelog" } else { $config.modtale.changelogFieldName }
 $channelFieldName = if ([string]::IsNullOrWhiteSpace($config.modtale.channelFieldName)) { "channel" } else { $config.modtale.channelFieldName }
 $gameVersionFieldName = if ([string]::IsNullOrWhiteSpace($config.modtale.gameVersionFieldName)) { "gameVersions" } else { $config.modtale.gameVersionFieldName }
+$existingVersion = $null
+$existingFileUrl = ""
+
+if (-not [string]::IsNullOrWhiteSpace($projectId)) {
+    try {
+        $existingResponse = Invoke-RestMethod -Method Get -Uri $endpoint
+        foreach ($versionRecord in @($existingResponse.versions)) {
+            if ("$($versionRecord.versionNumber)".Trim() -eq $normalizedVersion) {
+                $existingVersion = $versionRecord
+                $existingFileUrl = "$($versionRecord.fileUrl)".Trim()
+                break
+            }
+        }
+    } catch {
+        Write-Warning "Unable to inspect existing Modtale versions before upload: $($_.Exception.Message)"
+    }
+}
+
+$escapedVersionForFile = [regex]::Escape($normalizedVersion)
+$existingFileMatchesVersion = [string]::IsNullOrWhiteSpace($existingFileUrl) -or
+    ($existingFileUrl -match "(?i)(?<![0-9])v?$escapedVersionForFile(?![0-9])")
 
 if ($DryRun) {
     Write-Host "Dry-run: would publish '$ArtifactPath' to Modtale project '$projectId'."
     Write-Host "Endpoint: $endpoint"
     Write-Host "Version: $normalizedVersion"
     Write-Host "Channel: $channel"
+    if ($null -ne $existingVersion) {
+        Write-Host "Existing version file: $existingFileUrl"
+        if (-not $existingFileMatchesVersion) {
+            Write-Warning "Existing Modtale version '$normalizedVersion' points to a different artifact and must be replaced before live publishing."
+        }
+    }
     if ([string]::IsNullOrWhiteSpace($projectId)) {
         Write-Host "Note: modtale.projectId is empty in $ConfigPath."
     }
@@ -221,6 +248,10 @@ if ([string]::IsNullOrWhiteSpace($projectId)) {
 
 if ([string]::IsNullOrWhiteSpace($effectiveApiKey)) {
     throw "MODTALE_API_KEY is required when DryRun is false (MODTALE_API_KEY/MODTALE_API_TOKEN env var or -ApiKey/-ApiToken)."
+}
+
+if ($null -ne $existingVersion -and -not $existingFileMatchesVersion) {
+    throw "Modtale version '$normalizedVersion' already points to '$existingFileUrl', which does not match the release artifact version. Replace the stale version in Modtale before retrying so metadata-only upsert cannot mask the wrong binary."
 }
 
 $curlArgs = @(
