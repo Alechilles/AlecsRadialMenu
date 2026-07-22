@@ -1,4 +1,4 @@
-# Alec's Radial Menu v0.2.0
+# Alec's Radial Menu v1.0.0
 
 ## Summary
 This release expands Alec's Radial Menu into a configurable visual framework and adds a polished built-in texture wheel with aligned Figma-derived textures.
@@ -26,4 +26,4 @@ This release expands Alec's Radial Menu into a configurable visual framework and
 - Dependencies: None
 
 ## Artifact
-- `Alec's Radial Menu v0.2.0.jar`
+- `Alec's Radial Menu v1.0.0.jar`
