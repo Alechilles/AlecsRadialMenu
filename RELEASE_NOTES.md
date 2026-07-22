@@ -1,29 +1,22 @@
 # Alec's Radial Menu v1.0.0
 
 ## Summary
-This release expands Alec's Radial Menu into a configurable visual framework and adds a polished built-in texture wheel with aligned Figma-derived textures.
+This release adds native Hytale interaction execution to radial options, allowing menus to run interactions immediately or arm them for the next primary click. It also fixes armed-interaction timing and updates the telemetry descriptor for the current hosted telemetry flow.
 
 ## Added
-- Configurable radial menu visuals, including render modes, geometry, labels, state colors, and texture-set prefixes.
-- Default wheel textures with focused hover states, cropped client-side hit targets, and a matching center panel.
-- HStats integration and asset-pack coordination support.
-- A telemetry consent icon and stats descriptor so Alec's Radial Menu can opt into hosted usage summaries through the shared telemetry consent flow.
-- Validation coverage for visual configuration and texture completeness.
+- Native `RunInteraction` radial options for executing Hytale `RootInteraction` assets immediately or arming them for the radial item's next primary click.
+- Project licensing information and distribution-page icons.
 
 ## Changed
-- Updated the example radial menu to use the default texture wheel without an explicit texture prefix, and populated it with practical starter commands.
-- Moved texture generator examples to scratch output paths outside packaged resources.
-- Updated hosted telemetry stats routing to the current Alec telemetry ingest endpoint used by the shared rollout.
+- Moved the telemetry descriptor to `Server/Telemetry/project.json` and updated it to the current stats descriptor schema and hosted endpoint behavior.
 
-## Fixed
-- Updated compatibility for Hytale Update 5 APIs, including JOML vectors and player messaging.
-- Reworked hover handling to use client-side button states, avoiding sticky hovered slices.
-- Re-centered default wheel labels around their slice centers.
-- Fixed the close button hit bounds so the full visible button can hover and click.
+## Fixes
+- Fixed armed interactions failing when their Hytale interaction context was used after the active tick ended.
+- Fixed the Git Bash Maven wrapper so release builds use Java from `JAVA_HOME` or `PATH`.
 
 ## Compatibility
 - Hytale: 0.5.x
 - Dependencies: None
 
-## Artifact
+## Files
 - `Alec's Radial Menu v1.0.0.jar`

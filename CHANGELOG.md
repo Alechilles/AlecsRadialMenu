@@ -1,9 +1,12 @@
 # Changelog
 
-## Unreleased
+## 1.0.0
 - Fixed armed radial interactions failing because their active Hytale interaction context was used after its tick ended.
 - Added native `RunInteraction` radial options that can execute Hytale `RootInteraction` assets immediately or arm them for the radial item's next primary click.
 - Moved the telemetry descriptor to `Server/Telemetry/project.json`, updated it to the current stats descriptor schema, and removed dev endpoint overrides so Alec's Telemetry uses its default hosted endpoint.
+- Fixed the Git Bash Maven wrapper to resolve Java from `JAVA_HOME` or `PATH` instead of a removed JDK installation.
+- Added project licensing information.
+- Added project icons for distribution pages.
 
 ## 0.2.0
 - Added configurable radial menu visuals, including texture-set prefixes, geometry, state colors, labels, and texture/vector render modes.

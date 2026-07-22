@@ -11,8 +11,15 @@ if [ ! -f "$WRAPPER_JAR" ]; then
     exit 1
 fi
 
-# Use bundled JDK from Hytale Toolkit
-JAVACMD="C:/Program Files/Eclipse Adoptium/jdk-25.0.1.8-hotspot/bin/java"
+# Resolve Java from JAVA_HOME first, then PATH.
+if [ -n "${JAVA_HOME:-}" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+    JAVACMD="$JAVA_HOME/bin/java"
+elif command -v java >/dev/null 2>&1; then
+    JAVACMD=$(command -v java)
+else
+    echo "Error: Java runtime not found. Set JAVA_HOME or add java to PATH."
+    exit 1
+fi
 
 # Set MAVEN_PROJECTBASEDIR for multi-module support
 export MAVEN_PROJECTBASEDIR="$BASEDIR"
