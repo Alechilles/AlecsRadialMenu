@@ -1,19 +1,84 @@
 # Alec's Radial Menu
 
-Standalone radial menu framework mod for Hytale.
+Asset-driven radial menu framework mod for Hytale Server `0.5.x`.
 
-## V1 Scope
-- Asset-driven radial menus at `Server/RadialMenu/Menus/*.json`
-- Menu identity is the asset key (file/path key). `RadialMenuConfig` has no `Id` field.
-- Item interaction entrypoint: `Type: "RadialMenuInteraction"`
-- API entrypoint: `RadialMenuApi`
-- Built-in option action types:
-  - `ExecuteCommand`
-  - `InvokeRegisteredAction`
-  - `RunInteraction`
-- Execution modes:
-  - `SelectAndArm` (menu click selects only; execute on `ExecuteSelected`)
-  - `SelectAndRun` (menu click executes immediately and updates selection)
+## Features
+
+- Define radial menus as assets under `Server/RadialMenu/Menus/*.json`.
+- Show between 1 and 8 options on the built-in textured wheel.
+- Bind a menu to one or more held item IDs, or open it directly through the Java API.
+- Execute player commands, invoke actions registered by another mod, or run native Hytale `RootInteraction` assets.
+- Choose whether a slice runs immediately or becomes the item's armed primary action.
+- Customize wheel geometry, labels, state colors, and texture sets, with per-option font and color overrides.
+- Retain each player's selection independently for every menu until they disconnect.
+
+## Native Interaction Wheels
+
+`RunInteraction` options turn a radial menu into a wheel of Hytale interactions. A menu can mix interaction options with commands and registered mod actions.
+
+There are two execution modes:
+
+- `SelectAndArm`: choosing a slice stores it as the selected option. The item's `ExecuteSelected` binding then runs it through the active item interaction context. In the included example item, secondary use opens the wheel and primary use—normally left click—runs the armed option.
+- `SelectAndRun`: choosing a slice starts a standalone interaction chain immediately and also remembers the selection.
+
+### Interaction menu example
+
+```json
+{
+  "Enabled": true,
+  "ItemIds": [
+    "Alec_Radial_Menu_Example"
+  ],
+  "ExecutionMode": "SelectAndArm",
+  "DefaultOptionId": "left_swing",
+  "Options": [
+    {
+      "Type": "RunInteraction",
+      "Id": "left_swing",
+      "Label": "Left Swing",
+      "RootInteraction": "Root_Unarmed_Swing_Left",
+      "InteractionType": "Primary"
+    },
+    {
+      "Type": "ExecuteCommand",
+      "Id": "help",
+      "Label": "Help",
+      "Command": "/help"
+    }
+  ]
+}
+```
+
+The menu's identity is its asset key—the file/path key under `Server/RadialMenu/Menus`. `RadialMenuConfig` does not contain an `Id` field.
+
+### Item binding example
+
+Use `OpenMenu` on the input that should display the wheel and `ExecuteSelected` on the input that should run the armed option:
+
+```json
+{
+  "Interactions": {
+    "Primary": {
+      "Interactions": [
+        {
+          "Type": "RadialMenuInteraction",
+          "CommandId": "ExecuteSelected"
+        }
+      ]
+    },
+    "Secondary": {
+      "Interactions": [
+        {
+          "Type": "RadialMenuInteraction",
+          "CommandId": "OpenMenu"
+        }
+      ]
+    }
+  }
+}
+```
+
+The complete example item is at `Server/Item/Items/Commands/Alec_Radial_Menu_Example.json`.
 
 ## `RadialMenuConfig` Fields
 - `Enabled` (`true` default)
@@ -40,12 +105,15 @@ Standalone radial menu framework mod for Hytale.
   - omitted `Prefix` uses the built-in `RadialMenu/Default` texture wheel
 
 ### Option Types
+
+Every option supports `Id`, `Label` or `LabelKey`, optional `Feedback`, and optional `VisualOverride`.
+
 - `ExecuteCommand`
-  - `Id`, optional `Label`/`LabelKey`, `Command`, optional `VisualOverride`
+  - Adds `Command`.
 - `InvokeRegisteredAction`
-  - `Id`, optional `Label`/`LabelKey`, `ActionId`, optional `Payload`, optional `VisualOverride`
+  - Adds `ActionId` and optional string-to-string `Payload`.
 - `RunInteraction`
-  - `Id`, optional `Label`/`LabelKey`, `RootInteraction`, optional `InteractionType`, optional `VisualOverride`
+  - Adds `RootInteraction` and optional `InteractionType`.
   - `RootInteraction` references a Hytale `RootInteraction` asset.
   - `InteractionType` defaults to `Primary`; `Equipped` is unsupported because it requires an equipment slot.
   - With `SelectAndRun`, selecting the option starts a standalone interaction chain immediately.
@@ -64,18 +132,24 @@ Example:
 }
 ```
 
+### `Feedback` Fields (Option)
+
+- `ChatMessage` and `HudMessage` send text after a successful option execution.
+- `SoundEvent`, `ParticleSystem`, and `ParticleOffset` are reserved configuration fields; sound and particle playback are not implemented in the current runtime.
+
 ### `VisualOverride` Fields (Option)
 - `LabelFontSize` (optional)
 - `States` (optional partial state/color overrides)
 
 ## Interaction Usage
+
 `RadialMenuInteraction` supports:
+
 - `MenuId` (optional menu key override)
 - `CommandId` (`OpenMenu` or `ExecuteSelected`)
 - `ExecutionMode` (optional per-binding mode override)
 
-Example item is included:
-- `Server/Item/Items/Commands/Alec_Radial_Menu_Example.json`
+If `MenuId` is omitted, the runtime resolves the menu from the held item's ID using the menu's `ItemIds` list.
 
 ## API Usage
 From another mod:
