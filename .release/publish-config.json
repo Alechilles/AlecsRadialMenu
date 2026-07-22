@@ -1,0 +1,39 @@
+{
+  "modName": "Alec's Radial Menu!",
+  "repository": "Alechilles/AlecsRadialMenu",
+  "github": {
+    "prerelease": false
+  },
+  "packaging": "jar",
+  "artifactNameTemplate": "Alec's Radial Menu v{version}.jar",
+  "versionSource": "pom",
+  "versionFile": "pom.xml",
+  "requiresTameworkDependency": false,
+  "zipIncludes": [],
+  "curseforge": {
+    "projectId": "1502691",
+    "releaseType": "release",
+    "changelogType": "html",
+    "gameVersionTypeIds": [65437],
+    "requiredProjects": []
+  },
+  "modtale": {
+    "projectId": "b677a221-b3c4-4374-b159-9444dcb7200b",
+    "releaseChannel": "release",
+    "gameVersions": ["0.5.7", "0.5.6", "0.5.5", "0.5.4", "0.5.3", "0.5.2", "0.5.1", "0.5.0"],
+    "versionFieldName": "versionNumber",
+    "changelogFieldName": "changelog",
+    "channelFieldName": "channel",
+    "gameVersionFieldName": "gameVersions"
+  },
+  "modifold": {
+    "projectId": "LQlh3A",
+    "projectSlug": "alecs-radial-menu",
+    "requireApprovedProject": true,
+    "releaseChannel": "release",
+    "versionPrefix": "v",
+    "gameVersions": ["0.5.7", "0.5.6", "0.5.5", "0.5.4", "0.5.3", "0.5.2", "0.5.1", "0.5.0"],
+    "loaders": ["Vanilla"],
+    "dependencies": []
+  }
+}
