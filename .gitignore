@@ -1,6 +1,9 @@
 target/
 build/
 .idea/
+.classpath
+.project
+.settings/
 .tmp/
 /.asset-tools/
 *.iml

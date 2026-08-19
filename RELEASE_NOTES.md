@@ -1,22 +1,30 @@
-# Alec's Radial Menu v1.0.0
+# Alec's Radial Menu v2.0.0
 
 ## Summary
-This release adds native Hytale interaction execution to radial options, allowing menus to run interactions immediately or arm them for the next primary click. It also fixes armed-interaction timing and updates the telemetry descriptor for the current hosted telemetry flow.
+This release adds NPC-driven radial menu workflows. NPC instructions can open target-aware menus that change NPC state, emit named results, or run registered Java actions. The release also adds Hytale Update 6 support and a complete user and developer wiki.
 
 ## Added
-- Native `RunInteraction` radial options for executing Hytale `RootInteraction` assets immediately or arming them for the radial item's next primary click.
-- Project licensing information and distribution-page icons.
+- The `OpenRadialMenu` NPC action and the consuming `RadialMenuResult` sensor.
+- Target-aware `SetNpcState`, `EmitNpcResult`, and `InvokeRegisteredNpcAction` menu options.
+- Public Java API methods and handlers for NPC targets and target-aware actions.
+- Shipped NPC role and menu examples, plus an Ice Staff option in the basic menu.
+- Asset-editor tooltips for radial menu configuration.
+- A complete wiki for setup, menu authoring, NPC integration, Java API use, compatibility, and troubleshooting.
 
 ## Changed
-- Moved the telemetry descriptor to `Server/Telemetry/project.json` and updated it to the current stats descriptor schema and hosted endpoint behavior.
+- NPC-only options remain visible but are disabled when the menu has no valid NPC target.
+- Updated NPC integration for the Hytale Update 6 API.
+- Migrated builds to the shared Gradle workspace and moved publishing to the central local release runner.
 
 ## Fixes
-- Fixed armed interactions failing when their Hytale interaction context was used after the active tick ended.
-- Fixed the Git Bash Maven wrapper so release builds use Java from `JAVA_HOME` or `PATH`.
+- Hardened NPC menu boundaries and delayed builder-context validation until the required runtime context exists.
+- Declared externally set NPC states and localized the NPC interaction prompt.
+- Qualified NPC interaction hint keys to prevent asset-key resolution errors.
 
 ## Compatibility
-- Hytale: 0.5.x
-- Dependencies: None
+- Hytale Server: `>=0.5.7 <0.7.0 || >=0.6.0-pre.1 <0.6.0`
+- Hytale modules: AssetModule and NPC
+- Marketplace dependency: Alec's Telemetry 1.1.0
 
 ## Files
-- `Alec's Radial Menu v1.0.0.jar`
+- `Alec's Radial Menu v2.0.0.jar`

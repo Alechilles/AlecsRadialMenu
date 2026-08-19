@@ -1,8 +1,18 @@
 # Changelog
 
+## 2.0.0
+- Added NPC-opened radial menus with target-aware options for state changes, named instruction results, and registered Java actions.
+- Added the `OpenRadialMenu` NPC action and the consuming `RadialMenuResult` sensor, with shipped NPC role and menu examples.
+- Added target-aware NPC methods and handlers to the public Java API.
+- Added availability rules that keep NPC-only options visible but disabled when no valid NPC target exists.
+- Added asset-editor tooltips for radial menu configuration fields.
+- Added a complete wiki for installation, menu authoring, NPC integration, Java API use, compatibility, and troubleshooting.
+- Added an Ice Staff interaction to the basic example menu.
+- Updated NPC integration for the Hytale Update 6 API and declared the required NPC states.
+- Fixed NPC menu boundary handling, deferred builder-context validation, localized interaction prompts, and qualified NPC hint keys.
+- Migrated builds to the shared Gradle workspace and moved release publishing to the central local publisher.
+
 ## 1.0.0
-- Added NPC-opened radial menus with immediate state changes, named instruction results, and target-aware registered actions.
-- Added the `OpenRadialMenu` NPC action and consuming `RadialMenuResult` sensor.
 - Fixed armed radial interactions failing because their active Hytale interaction context was used after its tick ended.
 - Added native `RunInteraction` radial options that can execute Hytale `RootInteraction` assets immediately or arm them for the radial item's next primary click.
 - Moved the telemetry descriptor to `Server/Telemetry/project.json`, updated it to the current stats descriptor schema, and removed dev endpoint overrides so Alec's Telemetry uses its default hosted endpoint.

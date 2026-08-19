@@ -52,6 +52,13 @@
       "Label": "Left Swing",
       "RootInteraction": "Root_Unarmed_Swing_Left",
       "InteractionType": "Primary"
+    },
+    {
+      "Type": "RunInteraction",
+      "Id": "ice_staff",
+      "Label": "Ice Staff",
+      "RootInteraction": "Root_Ice_Staff_Primary_Entry",
+      "InteractionType": "Primary"
     }
   ]
 }
