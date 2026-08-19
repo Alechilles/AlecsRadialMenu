@@ -19,10 +19,6 @@ public final class BuilderSensorRadialMenuResult extends BuilderSensorBase {
     private final StringHolder menuId = new StringHolder();
     private final StringHolder resultId = new StringHolder();
 
-    public BuilderSensorRadialMenuResult() {
-        requireInstructionType(EnumSet.of(InstructionType.Interaction));
-    }
-
     @Nonnull
     @Override
     public Sensor build(@Nonnull BuilderSupport support) {
@@ -50,6 +46,7 @@ public final class BuilderSensorRadialMenuResult extends BuilderSensorBase {
                 "Named radial result to consume.",
                 null
         );
+        requireInstructionType(EnumSet.of(InstructionType.Interaction));
         return this;
     }
 

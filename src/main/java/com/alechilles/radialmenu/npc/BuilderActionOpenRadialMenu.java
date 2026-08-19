@@ -18,10 +18,6 @@ public final class BuilderActionOpenRadialMenu extends BuilderActionBase {
 
     private final StringHolder menuId = new StringHolder();
 
-    public BuilderActionOpenRadialMenu() {
-        requireInstructionType(EnumSet.of(InstructionType.Interaction));
-    }
-
     @Nonnull
     @Override
     public Action build(@Nonnull BuilderSupport support) {
@@ -40,6 +36,7 @@ public final class BuilderActionOpenRadialMenu extends BuilderActionBase {
                 "Radial menu asset id to open for the interacting player.",
                 null
         );
+        requireInstructionType(EnumSet.of(InstructionType.Interaction));
         return this;
     }
 
