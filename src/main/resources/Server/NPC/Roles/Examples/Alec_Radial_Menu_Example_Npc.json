@@ -160,7 +160,7 @@
           {
             "Type": "SetInteractable",
             "Interactable": true,
-            "Hint": "interactionHints.openRadialMenu"
+            "Hint": "server.interactionHints.openRadialMenu"
           }
         ]
       },

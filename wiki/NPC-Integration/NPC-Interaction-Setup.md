@@ -23,7 +23,7 @@ Add the interaction prompt and menu action to the role's `InteractionInstruction
     {
       "Type": "SetInteractable",
       "Interactable": true,
-      "Hint": "interactionHints.openRadialMenu"
+      "Hint": "server.interactionHints.openRadialMenu"
     }
   ]
 }
@@ -34,6 +34,8 @@ Add the interaction prompt and menu action to the role's `InteractionInstruction
 ```text
 interactionHints.openRadialMenu=Press [{key}] to open radial menu
 ```
+
+The entry in `server.lang` omits the namespace prefix. The consuming `Hint` reference includes `server.`.
 
 If the game shows the key text instead of the message, check the key spelling, asset-pack loading, and client cache. Then restart the client and server.
 

@@ -11,7 +11,13 @@ Parent: [Reference Library](/mod/alecs-radial-menu/reference-library) · [Home](
 
 ## The interaction prompt shows a raw language key
 
-Confirm that `SetInteractable.Hint` is a key, not the final sentence, and that the same key exists in the loaded language file.
+Use the fully qualified key in the role:
+
+```json
+"Hint": "server.interactionHints.openRadialMenu"
+```
+
+Define the entry without the namespace prefix in `Server/Languages/en-US/server.lang`:
 
 ```text
 interactionHints.openRadialMenu=Press [{key}] to open radial menu
