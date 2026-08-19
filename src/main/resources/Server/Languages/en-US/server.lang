@@ -22,5 +22,5 @@ radialmenu.warning.execute.unsupported=This option type is not supported.
 server.items.Alec_Radial_Menu_Example.name=Radial Menu Tool (Example)
 server.items.Alec_Radial_Menu_Example.description=Primary executes the selected option. Secondary opens the radial menu.
 radialmenu.example.option.ping=Ping Action
-radialmenu.example.npc.interact=Open radial menu
+interactionHints.openRadialMenu=Press [{key}] to open radial menu
 server.npcRoles.Alec_Radial_Menu_Example_Npc.name=Radial Menu Test NPC

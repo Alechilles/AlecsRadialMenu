@@ -160,7 +160,7 @@
           {
             "Type": "SetInteractable",
             "Interactable": true,
-            "Hint": "radialmenu.example.npc.interact"
+            "Hint": "interactionHints.openRadialMenu"
           }
         ]
       },
