@@ -6,6 +6,7 @@ import com.alechilles.radialmenu.api.RadialMenuNpcTarget;
 import com.alechilles.radialmenu.npc.RadialMenuResultComponent;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.hypixel.hytale.server.npc.role.support.StateSupport;
 
 final class HytaleRadialMenuNpcEffectExecutor implements RadialMenuNpcEffectExecutor {
     static final long RESULT_TTL_MILLIS = 5_000L;
@@ -16,12 +17,19 @@ final class HytaleRadialMenuNpcEffectExecutor implements RadialMenuNpcEffectExec
             return false;
         }
         try {
-            target.npc().getRole().getStateSupport().setState(
-                    target.reference(),
-                    state.trim(),
-                    subState == null || subState.isBlank() ? null : subState.trim(),
-                    target.store()
-            );
+            StateSupport stateSupport = target.npc().getRole().getStateSupport();
+            int stateIndex = stateSupport.getStateHelper().getStateIndex(state.trim());
+            if (stateIndex < 0) {
+                return false;
+            }
+            String resolvedSubState = subState == null || subState.isBlank()
+                    ? stateSupport.getStateHelper().getDefaultSubState()
+                    : subState.trim();
+            int subStateIndex = stateSupport.getStateHelper().getSubStateIndex(stateIndex, resolvedSubState);
+            if (subStateIndex < 0) {
+                return false;
+            }
+            stateSupport.setState(stateIndex, subStateIndex, true, false);
             return true;
         } catch (RuntimeException ex) {
             return false;

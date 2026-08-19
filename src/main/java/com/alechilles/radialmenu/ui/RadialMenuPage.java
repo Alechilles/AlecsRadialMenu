@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
@@ -90,6 +91,26 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
     @Nullable
     private final HytaleLogger logger;
     private boolean handled;
+
+    public RadialMenuPage(@Nonnull PlayerRef playerRef,
+                          @Nonnull String menuKey,
+                          @Nonnull RadialMenuConfig config,
+                          @Nullable String selectedOptionId,
+                          @Nonnull Consumer<String> selectionCallback,
+                          @Nullable HytaleLogger logger) {
+        this(
+                playerRef,
+                menuKey,
+                config,
+                selectedOptionId,
+                false,
+                (optionId, playerEntityRef, store) -> {
+                    selectionCallback.accept(optionId);
+                    return true;
+                },
+                logger
+        );
+    }
 
     public RadialMenuPage(@Nonnull PlayerRef playerRef,
                           @Nonnull String menuKey,

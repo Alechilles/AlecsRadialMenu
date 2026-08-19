@@ -179,6 +179,14 @@ public final class RadialMenuRuntimeService {
             warnAndLog(player, "radialmenu.warning.open.unavailable", "Entity store unavailable for menu: " + normalizedMenuKey);
             return false;
         }
+        if (targetHandle != null && targetHandle.resolve(store) == null) {
+            warnAndLog(
+                    player,
+                    "radialmenu.warning.open.unavailable",
+                    "NPC target is not available in the player's world for menu: " + normalizedMenuKey
+            );
+            return false;
+        }
 
         String selectedOptionId = sessions.getSelectedOptionId(player.getUuid(), normalizedMenuKey);
         RadialMenuPage page = new RadialMenuPage(
@@ -187,14 +195,23 @@ public final class RadialMenuRuntimeService {
                 menu,
                 selectedOptionId,
                 targetHandle != null,
-                (optionId, ignoredPlayerRef, callbackStore) -> handleOptionSelection(
-                        player,
-                        normalizedMenuKey,
-                        optionId,
-                        modeOverride,
-                        source + ".menu",
-                        targetHandle == null ? null : targetHandle.resolve(callbackStore)
-                ),
+                (optionId, callbackPlayerRef, callbackStore) -> {
+                    if (!callbackPlayerRef.isValid() || callbackPlayerRef.getStore() != callbackStore) {
+                        return false;
+                    }
+                    Player currentPlayer = callbackStore.getComponent(callbackPlayerRef, Player.getComponentType());
+                    if (currentPlayer == null) {
+                        return false;
+                    }
+                    return handleOptionSelection(
+                            currentPlayer,
+                            normalizedMenuKey,
+                            optionId,
+                            modeOverride,
+                            source + ".menu",
+                            targetHandle == null ? null : targetHandle.resolve(callbackStore)
+                    );
+                },
                 logger
         );
         player.getPageManager().openCustomPage(playerRef, store, page);
