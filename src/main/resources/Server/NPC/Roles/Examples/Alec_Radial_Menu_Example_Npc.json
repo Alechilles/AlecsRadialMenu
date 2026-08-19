@@ -79,7 +79,8 @@
         {
           "Sensor": {
             "Type": "State",
-            "State": "Sleep"
+            "State": "Sleep",
+            "IgnoreMissingSetState": true
           },
           "Instructions": [
             {
@@ -113,7 +114,8 @@
         {
           "Sensor": {
             "Type": "State",
-            "State": "Alerted"
+            "State": "Alerted",
+            "IgnoreMissingSetState": true
           },
           "Instructions": [
             {
