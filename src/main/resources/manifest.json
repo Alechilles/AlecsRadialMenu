@@ -13,7 +13,8 @@
     "Main": "com.alechilles.radialmenu.RadialMenuMod",
     "ServerVersion": "0.5.x",
     "Dependencies": {
-        "Hytale:AssetModule": "*"
+        "Hytale:AssetModule": "*",
+        "Hytale:NPC": "*"
     },
     "OptionalDependencies": {
         
