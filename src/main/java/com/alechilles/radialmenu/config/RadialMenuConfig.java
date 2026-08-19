@@ -78,30 +78,35 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (feedback, value) -> feedback.chatMessage = value,
                     feedback -> feedback.chatMessage
             )
+            .documentation("Optional chat message sent to the player after the option runs successfully.")
             .add()
             .<String>append(
                     new KeyedCodec<>("HudMessage", Codec.STRING),
                     (feedback, value) -> feedback.hudMessage = value,
                     feedback -> feedback.hudMessage
             )
+            .documentation("Optional HUD message sent to the player after the option runs successfully.")
             .add()
             .<String>append(
                     new KeyedCodec<>("SoundEvent", SOUND_EVENT_CODEC),
                     (feedback, value) -> feedback.soundEvent = value,
                     feedback -> feedback.soundEvent
             )
+            .documentation("Optional SoundEvent asset reserved for success feedback. The current runtime does not play it.")
             .add()
             .<String>append(
                     new KeyedCodec<>("ParticleSystem", PARTICLE_SYSTEM_CODEC),
                     (feedback, value) -> feedback.particleSystem = value,
                     feedback -> feedback.particleSystem
             )
+            .documentation("Optional ParticleSystem asset reserved for success feedback. The current runtime does not spawn it.")
             .add()
             .<Vector3d>append(
                     new KeyedCodec<>("ParticleOffset", VECTOR3D_CODEC),
                     (feedback, value) -> feedback.particleOffset = value,
                     feedback -> feedback.particleOffset
             )
+            .documentation("Optional [X, Y, Z] offset reserved for ParticleSystem feedback. The current runtime does not use it.")
             .add()
             .build();
 
@@ -114,18 +119,21 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (colors, value) -> colors.fillColor = value,
                     colors -> colors.fillColor
             )
+            .documentation("Fill color for the radial slice in this visual state.")
             .add()
             .<String>append(
                     new KeyedCodec<>("TextColor", Codec.STRING),
                     (colors, value) -> colors.textColor = value,
                     colors -> colors.textColor
             )
+            .documentation("Option label color in this visual state.")
             .add()
             .<String>append(
                     new KeyedCodec<>("BorderColor", Codec.STRING),
                     (colors, value) -> colors.borderColor = value,
                     colors -> colors.borderColor
             )
+            .documentation("Radial slice border color in this visual state.")
             .add()
             .build();
 
@@ -138,30 +146,35 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (palette, value) -> palette.defaultState = value,
                     palette -> palette.defaultState
             )
+            .documentation("Colors used while an available option is idle and not selected.")
             .add()
             .<StateColors>append(
                     new KeyedCodec<>("Hover", STATE_COLORS_CODEC),
                     (palette, value) -> palette.hoverState = value,
                     palette -> palette.hoverState
             )
+            .documentation("Colors used while the pointer is over an available option.")
             .add()
             .<StateColors>append(
                     new KeyedCodec<>("Pressed", STATE_COLORS_CODEC),
                     (palette, value) -> palette.pressedState = value,
                     palette -> palette.pressedState
             )
+            .documentation("Colors used while an available option is pressed.")
             .add()
             .<StateColors>append(
                     new KeyedCodec<>("Selected", STATE_COLORS_CODEC),
                     (palette, value) -> palette.selectedState = value,
                     palette -> palette.selectedState
             )
+            .documentation("Colors used for the option that is currently selected for this menu.")
             .add()
             .<StateColors>append(
                     new KeyedCodec<>("Disabled", STATE_COLORS_CODEC),
                     (palette, value) -> palette.disabledState = value,
                     palette -> palette.disabledState
             )
+            .documentation("Colors used when an option cannot run in the current context.")
             .add()
             .build();
 
@@ -171,24 +184,28 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (geometry, value) -> geometry.outerDiameterPx = value == null ? Geometry.DEFAULT_OUTER_DIAMETER : value,
                     geometry -> geometry.outerDiameterPx
             )
+            .documentation("Outer diameter of the radial wheel in pixels. Default: 640.")
             .add()
             .<Integer>append(
                     new KeyedCodec<>("InnerDiameterPx", Codec.INTEGER),
                     (geometry, value) -> geometry.innerDiameterPx = value == null ? Geometry.DEFAULT_INNER_DIAMETER : value,
                     geometry -> geometry.innerDiameterPx
             )
+            .documentation("Diameter of the open area inside the radial slices, in pixels. Default: 300.")
             .add()
             .<Integer>append(
                     new KeyedCodec<>("LabelRadiusPx", Codec.INTEGER),
                     (geometry, value) -> geometry.labelRadiusPx = value == null ? Geometry.DEFAULT_LABEL_RADIUS : value,
                     geometry -> geometry.labelRadiusPx
             )
+            .documentation("Distance from the wheel center to each option label, in pixels. Default: 234.")
             .add()
             .<Integer>append(
                     new KeyedCodec<>("CenterDiameterPx", Codec.INTEGER),
                     (geometry, value) -> geometry.centerDiameterPx = value == null ? Geometry.DEFAULT_CENTER_DIAMETER : value,
                     geometry -> geometry.centerDiameterPx
             )
+            .documentation("Diameter of the center panel in pixels. Default: 300.")
             .add()
             .build();
 
@@ -201,6 +218,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (label, value) -> label.fontSize = value == null ? LabelVisual.DEFAULT_FONT_SIZE : value,
                     label -> label.fontSize
             )
+            .documentation("Default option label font size in pixels. Default: 15.")
             .add()
             .build();
 
@@ -213,12 +231,14 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (textureSet, value) -> textureSet.preset = TexturePreset.fromString(value),
                     textureSet -> textureSet.getPreset().name()
             )
+            .documentation("Built-in texture naming preset. Current value: LegacyDefault.")
             .add()
             .<String>append(
                     new KeyedCodec<>("Prefix", Codec.STRING),
                     (textureSet, value) -> textureSet.prefix = value,
                     textureSet -> textureSet.prefix
             )
+            .documentation("Optional custom texture resource path prefix. If omitted, uses RadialMenu/Default.")
             .add()
             .build();
 
@@ -228,36 +248,42 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (visual, value) -> visual.renderMode = RenderMode.fromString(value),
                     visual -> visual.getRenderMode().name()
             )
+            .documentation("Wheel rendering method: Texture or Vector. Default: Texture.")
             .add()
             .<Geometry>append(
                     new KeyedCodec<>("Geometry", GEOMETRY_CODEC),
                     (visual, value) -> visual.geometry = value == null ? Geometry.defaults() : value,
                     visual -> visual.getGeometry()
             )
+            .documentation("Wheel dimensions and option label placement.")
             .add()
             .<Integer>append(
                     new KeyedCodec<>("BorderThicknessPx", Codec.INTEGER),
                     (visual, value) -> visual.borderThicknessPx = value == null ? Visual.DEFAULT_BORDER_THICKNESS : value,
                     visual -> visual.borderThicknessPx
             )
+            .documentation("Radial slice border thickness in pixels. Default: 2.")
             .add()
             .<LabelVisual>append(
                     new KeyedCodec<>("Label", LABEL_VISUAL_CODEC),
                     (visual, value) -> visual.label = value == null ? LabelVisual.defaults() : value,
                     visual -> visual.getLabel()
             )
+            .documentation("Default label appearance for all options in this menu.")
             .add()
             .<StatePalette>append(
                     new KeyedCodec<>("States", STATE_PALETTE_CODEC),
                     (visual, value) -> visual.states = value == null ? StatePalette.defaults() : value,
                     visual -> visual.getStates()
             )
+            .documentation("Default color palette for each option visual state.")
             .add()
             .<TextureSet>append(
                     new KeyedCodec<>("TextureSet", TEXTURE_SET_CODEC),
                     (visual, value) -> visual.textureSet = value == null ? TextureSet.defaults() : value,
                     visual -> visual.getTextureSet()
             )
+            .documentation("Texture resources used when RenderMode is Texture.")
             .add()
             .build();
 
@@ -270,12 +296,14 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (override, value) -> override.labelFontSize = value,
                     override -> override.labelFontSize
             )
+            .documentation("Optional font size for this option. Positive values replace the menu label font size.")
             .add()
             .<StatePalette>append(
                     new KeyedCodec<>("States", STATE_PALETTE_CODEC),
                     (override, value) -> override.states = value,
                     override -> override.states
             )
+            .documentation("Optional partial color overrides for this option. Missing colors use the menu palette.")
             .add()
             .build();
 
@@ -285,30 +313,35 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (option, value) -> option.id = value,
                     option -> option.id
             )
+            .documentation("Stable option ID used for selection, DefaultOptionId, and execution.")
             .add()
             .<String>append(
                     new KeyedCodec<>("LabelKey", Codec.STRING),
                     (option, value) -> option.labelKey = value,
                     option -> option.labelKey
             )
+            .documentation("Optional localization key for the option label. Used when Label is omitted or blank.")
             .add()
             .<String>append(
                     new KeyedCodec<>("Label", Codec.STRING),
                     (option, value) -> option.label = value,
                     option -> option.label
             )
+            .documentation("Optional literal option label. Takes precedence over LabelKey.")
             .add()
             .<Feedback>append(
                     new KeyedCodec<>("Feedback", FEEDBACK_CODEC),
                     (option, value) -> option.feedback = value,
                     option -> option.feedback
             )
+            .documentation("Optional player feedback sent after this option runs successfully.")
             .add()
             .<OptionVisualOverride>append(
                     new KeyedCodec<>("VisualOverride", OPTION_VISUAL_OVERRIDE_CODEC),
                     (option, value) -> option.visualOverride = value,
                     option -> option.visualOverride
             )
+            .documentation("Optional label and state-color overrides for this option.")
             .add()
             .build();
 
@@ -319,6 +352,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                             (option, value) -> option.command = value,
                             option -> option.command
                     )
+                    .documentation("Command text to run as the player when this option executes.")
                     .add()
                     .build();
 
@@ -333,12 +367,14 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                             (option, value) -> option.actionId = value,
                             option -> option.actionId
                     )
+                    .documentation("ID of a server action handler registered through the radial menu API.")
                     .add()
                     .<Map<String, String>>append(
                             new KeyedCodec<>("Payload", MapCodec.STRING_HASH_MAP_CODEC),
                             (option, value) -> option.payload = value == null ? Collections.emptyMap() : value,
                             option -> option.payload
                     )
+                    .documentation("Optional string key-value data passed to the registered action handler.")
                     .add()
                     .build();
 
@@ -349,6 +385,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                             (option, value) -> option.rootInteraction = value,
                             option -> option.rootInteraction
                     )
+                    .documentation("RootInteraction asset to run when this option executes.")
                     .add()
                     .<InteractionType>append(
                             new KeyedCodec<>("InteractionType", new EnumCodec<>(InteractionType.class), false),
@@ -357,6 +394,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                                     : value,
                             option -> option.getInteractionType()
                     )
+                    .documentation("Interaction type for standalone execution. Default: Primary. Equipped is not supported.")
                     .add()
                     .build();
 
@@ -367,12 +405,14 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                             (option, value) -> option.state = value,
                             option -> option.state
                     )
+                    .documentation("NPC state to set. This option requires a live NPC target.")
                     .add()
                     .<String>append(
                             new KeyedCodec<>("SubState", Codec.STRING),
                             (option, value) -> option.subState = value,
                             option -> option.subState
                     )
+                    .documentation("Optional NPC substate to set with State.")
                     .add()
                     .build();
 
@@ -383,6 +423,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                             (option, value) -> option.resultId = value,
                             option -> option.resultId
                     )
+                    .documentation("Named short-lived result emitted to the target NPC instruction graph.")
                     .add()
                     .build();
 
@@ -397,12 +438,14 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                             (option, value) -> option.actionId = value,
                             option -> option.actionId
                     )
+                    .documentation("ID of a target-aware action handler registered through the radial menu API.")
                     .add()
                     .<Map<String, String>>append(
                             new KeyedCodec<>("Payload", MapCodec.STRING_HASH_MAP_CODEC),
                             (option, value) -> option.payload = value == null ? Collections.emptyMap() : value,
                             option -> option.payload
                     )
+                    .documentation("Optional string key-value data passed to the target-aware action handler.")
                     .add()
                     .build();
 
@@ -444,36 +487,42 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (asset, value) -> asset.enabled = value == null || value,
                     asset -> asset.enabled
             )
+            .documentation("Controls whether this radial menu can be resolved and opened. Default: true.")
             .add()
             .<String[]>append(
                     new KeyedCodec<>("ItemIds", Codec.STRING_ARRAY),
                     (asset, value) -> asset.itemIds = value == null ? EMPTY_ITEM_IDS : value,
                     asset -> asset.itemIds
             )
+            .documentation("Item asset IDs that resolve to this menu when an interaction does not specify MenuId.")
             .add()
             .<String>append(
                     new KeyedCodec<>("ExecutionMode", Codec.STRING),
                     (asset, value) -> asset.executionMode = ExecutionMode.fromString(value),
                     asset -> asset.executionMode.name()
             )
+            .documentation("Selection behavior: SelectAndArm stores the choice; SelectAndRun executes it immediately. Default: SelectAndArm.")
             .add()
             .<String>append(
                     new KeyedCodec<>("DefaultOptionId", Codec.STRING),
                     (asset, value) -> asset.defaultOptionId = value,
                     asset -> asset.defaultOptionId
             )
+            .documentation("Option ID selected by default. If it is missing or invalid, the first valid option is used.")
             .add()
             .<Option[]>append(
                     new KeyedCodec<>("Options", OPTION_ARRAY_CODEC),
                     (asset, value) -> asset.options = value == null ? EMPTY_OPTIONS : value,
                     asset -> asset.options
             )
+            .documentation("Ordered menu options. A radial menu displays at most eight options.")
             .add()
             .<Visual>append(
                     new KeyedCodec<>("Visual", VISUAL_CODEC),
                     (asset, value) -> asset.visual = value == null ? Visual.defaults() : value,
                     asset -> asset.getVisual()
             )
+            .documentation("Wheel geometry, labels, colors, and texture resources.")
             .add()
             .build();
 

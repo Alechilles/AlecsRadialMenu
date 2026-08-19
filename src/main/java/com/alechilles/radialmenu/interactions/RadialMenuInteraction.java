@@ -36,6 +36,7 @@ public final class RadialMenuInteraction extends SimpleInteraction {
                     interaction -> interaction.menuId,
                     (interaction, parent) -> interaction.menuId = parent.menuId
             )
+            .documentation("Optional radial menu asset ID. If omitted, resolves the menu from the held item. Omission inherits the parent value.")
             .add()
             .<String>appendInherited(
                     new KeyedCodec<>("CommandId", Codec.STRING),
@@ -43,6 +44,7 @@ public final class RadialMenuInteraction extends SimpleInteraction {
                     interaction -> interaction.commandId,
                     (interaction, parent) -> interaction.commandId = parent.commandId
             )
+            .documentation("Action to perform: OpenMenu or ExecuteSelected. If omitted, opens the menu. Omission inherits the parent value.")
             .add()
             .<String>appendInherited(
                     new KeyedCodec<>("ExecutionMode", Codec.STRING),
@@ -50,6 +52,7 @@ public final class RadialMenuInteraction extends SimpleInteraction {
                     interaction -> interaction.executionMode,
                     (interaction, parent) -> interaction.executionMode = parent.executionMode
             )
+            .documentation("Optional mode override: SelectAndArm or SelectAndRun. If omitted, uses the menu mode. Omission inherits the parent value.")
             .add()
             .build();
 
