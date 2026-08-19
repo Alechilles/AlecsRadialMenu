@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
@@ -86,7 +85,7 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
     private final RadialMenuConfig config;
     private final DisplayOption[] options;
     private final String selectedOptionId;
-    private final Consumer<String> selectionCallback;
+    private final SelectionHandler selectionHandler;
     private final Map<String, TextureMetrics> textureMetricsCache;
     @Nullable
     private final HytaleLogger logger;
@@ -96,14 +95,15 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
                           @Nonnull String menuKey,
                           @Nonnull RadialMenuConfig config,
                           @Nullable String selectedOptionId,
-                          @Nonnull Consumer<String> selectionCallback,
+                          boolean hasNpcTarget,
+                          @Nonnull SelectionHandler selectionHandler,
                           @Nullable HytaleLogger logger) {
         super(playerRef, CustomPageLifetime.CanDismiss, RadialMenuEventData.CODEC);
         this.menuKey = menuKey;
         this.config = config;
-        this.options = buildOptions(playerRef, config);
+        this.options = buildOptions(playerRef, config, hasNpcTarget);
         this.selectedOptionId = selectedOptionId;
-        this.selectionCallback = selectionCallback;
+        this.selectionHandler = selectionHandler;
         this.textureMetricsCache = new HashMap<>();
         this.logger = logger;
         this.handled = false;
@@ -173,12 +173,14 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
                     vectorMode
             );
 
-            eventBuilder.addEventBinding(
-                    CustomUIEventBindingType.Activating,
-                    buttonSelector,
-                    EventData.of(EVENT_OPTION_ID, option.id()).append(EVENT_ACTION, ACTION_SELECT),
-                    false
-            );
+            if (option.enabled()) {
+                eventBuilder.addEventBinding(
+                        CustomUIEventBindingType.Activating,
+                        buttonSelector,
+                        EventData.of(EVENT_OPTION_ID, option.id()).append(EVENT_ACTION, ACTION_SELECT),
+                        false
+                );
+            }
         }
 
         eventBuilder.addEventBinding(
@@ -207,9 +209,12 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
             close();
             return;
         }
+        if (!selected.enabled()) {
+            return;
+        }
         handled = true;
         close();
-        selectionCallback.accept(selected.id());
+        selectionHandler.select(selected.id(), ref, store);
     }
 
     @Override
@@ -267,8 +272,19 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
             return;
         }
 
-        boolean isSelected = selectedOptionId != null && selectedOptionId.equalsIgnoreCase(displayOption.id());
+        boolean isSelected = displayOption.enabled()
+                && selectedOptionId != null
+                && selectedOptionId.equalsIgnoreCase(displayOption.id());
         ResolvedOptionVisual style = RadialMenuVisualResolver.resolveOptionVisual(config, option, isSelected);
+        RadialMenuVisualResolver.ResolvedState defaultState = displayOption.enabled()
+                ? style.defaultState()
+                : style.disabledState();
+        RadialMenuVisualResolver.ResolvedState hoverState = displayOption.enabled()
+                ? style.hoverState()
+                : style.disabledState();
+        RadialMenuVisualResolver.ResolvedState pressedState = displayOption.enabled()
+                ? style.pressedState()
+                : style.disabledState();
         int textureIndex = vectorMode ? optionIndex : resolveTextureIndex(texturePrefix, optionIndex);
 
         String defaultTexture = vectorMode
@@ -280,9 +296,9 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         String pressedTexture = vectorMode
                 ? defaultTexture
                 : texturePrefix + "/CommandWheelSlice" + textureIndex + "_Pressed.png";
-        String defaultColor = vectorMode ? style.defaultState().fillColor() : null;
-        String hoverColor = vectorMode ? style.hoverState().fillColor() : null;
-        String pressedColor = vectorMode ? style.pressedState().fillColor() : null;
+        String defaultColor = vectorMode || !displayOption.enabled() ? defaultState.fillColor() : null;
+        String hoverColor = vectorMode || !displayOption.enabled() ? hoverState.fillColor() : null;
+        String pressedColor = vectorMode || !displayOption.enabled() ? pressedState.fillColor() : null;
 
         if (!vectorMode && isFullWheelTextureSet(texturePrefix)) {
             String croppedTexturePrefix = texturePrefix + "/Cropped";
@@ -291,15 +307,15 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
             pressedTexture = croppedTexturePrefix + "/CommandWheelSlice" + textureIndex + "_Pressed.png";
             commandBuilder.setObject(
                     buttonSelector + ".Style.Default.Background",
-                    buildPatchStyle(defaultTexture, null)
+                    buildPatchStyle(defaultTexture, defaultColor)
             );
             commandBuilder.setObject(
                     buttonSelector + ".Style.Hovered.Background",
-                    buildPatchStyle(hoverTexture, null)
+                    buildPatchStyle(hoverTexture, hoverColor)
             );
             commandBuilder.setObject(
                     buttonSelector + ".Style.Pressed.Background",
-                    buildPatchStyle(pressedTexture, null)
+                    buildPatchStyle(pressedTexture, pressedColor)
             );
         } else {
             commandBuilder.setObject(
@@ -321,14 +337,14 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
                     borderSelector + ".Background",
                     buildPatchStyle(
                             texturePrefix + "/CommandWheelSlice" + optionIndex + "_Border.png",
-                            style.defaultState().borderColor()
+                            defaultState.borderColor()
                     )
             );
         }
 
         commandBuilder.set(labelSelector + ".Style.FontSize", style.labelFontSize());
-        commandBuilder.set(labelSelector + ".Style.TextColor", style.defaultState().textColor());
-        commandBuilder.set(labelSelector + ".Style.OutlineColor", style.defaultState().borderColor());
+        commandBuilder.set(labelSelector + ".Style.TextColor", defaultState.textColor());
+        commandBuilder.set(labelSelector + ".Style.OutlineColor", defaultState.borderColor());
     }
 
     private void applyTransparentButtonBackground(@Nonnull UICommandBuilder commandBuilder,
@@ -735,7 +751,9 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
     }
 
     @Nonnull
-    private static DisplayOption[] buildOptions(@Nonnull PlayerRef playerRef, @Nonnull RadialMenuConfig config) {
+    private static DisplayOption[] buildOptions(@Nonnull PlayerRef playerRef,
+                                                @Nonnull RadialMenuConfig config,
+                                                boolean hasNpcTarget) {
         Option[] source = config.getOptions();
         if (source == null || source.length == 0) {
             return new DisplayOption[0];
@@ -745,7 +763,11 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
             if (option == null || option.getId() == null || option.getId().isBlank()) {
                 continue;
             }
-            out.add(new DisplayOption(option.getId(), resolveOptionLabel(playerRef, option)));
+            out.add(new DisplayOption(
+                    option.getId(),
+                    resolveOptionLabel(playerRef, option),
+                    RadialMenuOptionAvailability.isEnabled(option, hasNpcTarget)
+            ));
             if (out.size() >= MAX_OPTIONS) {
                 break;
             }
@@ -816,7 +838,14 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         }
     }
 
-    private record DisplayOption(String id, String label) {
+    private record DisplayOption(String id, String label, boolean enabled) {
+    }
+
+    @FunctionalInterface
+    public interface SelectionHandler {
+        boolean select(@Nonnull String optionId,
+                       @Nonnull Ref<EntityStore> playerRef,
+                       @Nonnull Store<EntityStore> store);
     }
 
     private record Point(double x, double y) {

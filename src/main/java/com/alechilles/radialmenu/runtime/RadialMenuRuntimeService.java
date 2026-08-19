@@ -116,7 +116,14 @@ public final class RadialMenuRuntimeService {
                 normalizedMenuKey,
                 menu,
                 selectedOptionId,
-                optionId -> selectOption(player, normalizedMenuKey, optionId, modeOverride, source + ".menu"),
+                false,
+                (optionId, ignoredPlayerRef, ignoredStore) -> selectOption(
+                        player,
+                        normalizedMenuKey,
+                        optionId,
+                        modeOverride,
+                        source + ".menu"
+                ),
                 logger
         );
         player.getPageManager().openCustomPage(playerRef, store, page);
@@ -206,7 +213,7 @@ public final class RadialMenuRuntimeService {
         }
 
         sessions.setSelectedOptionId(player.getUuid(), menuKey, option.getId());
-        ExecutionMode mode = resolveMode(menu, modeOverride);
+        ExecutionMode mode = resolveMode(menu, modeOverride, false);
         if (mode == ExecutionMode.SelectAndArm) {
             sendInfo(player, "radialmenu.info.selection.selected", resolveOptionLabel(player, option));
             applyFeedback(player, option.getFeedback());
@@ -340,7 +347,12 @@ public final class RadialMenuRuntimeService {
     }
 
     @Nonnull
-    private ExecutionMode resolveMode(@Nonnull RadialMenuConfig menu, @Nullable ExecutionMode modeOverride) {
+    static ExecutionMode resolveMode(@Nonnull RadialMenuConfig menu,
+                                     @Nullable ExecutionMode modeOverride,
+                                     boolean npcTargeted) {
+        if (npcTargeted) {
+            return ExecutionMode.SelectAndRun;
+        }
         return modeOverride != null ? modeOverride : menu.getExecutionMode();
     }
 
