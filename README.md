@@ -200,7 +200,7 @@ Use `EmitNpcResult` when the role must run a native action such as `SetFlag`, `S
 }
 ```
 
-Results expire after five seconds. The sensor matches the same player, NPC, menu, and result, then consumes that result once. See [`examples/npc-radial-menu`](examples/npc-radial-menu) for a complete menu and role fragment.
+Results expire after five seconds. The sensor matches the same player, NPC, menu, and result, then consumes that result once. The mod ships a test role and menu. Run `/npc spawn Alec_Radial_Menu_Example_Npc`, then interact with the cow. See [`examples/npc-radial-menu`](examples/npc-radial-menu) for the test steps.
 
 ## API Usage
 From another mod:

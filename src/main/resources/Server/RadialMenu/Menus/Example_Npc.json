@@ -1,0 +1,34 @@
+{
+  "Enabled": true,
+  "ExecutionMode": "SelectAndRun",
+  "DefaultOptionId": "sleep",
+  "Options": [
+    {
+      "Type": "SetNpcState",
+      "Id": "sleep",
+      "Label": "Sleep",
+      "State": "Sleep",
+      "Feedback": {
+        "ChatMessage": "NPC state set to Sleep."
+      }
+    },
+    {
+      "Type": "SetNpcState",
+      "Id": "alert",
+      "Label": "Alert",
+      "State": "Alerted",
+      "Feedback": {
+        "ChatMessage": "NPC state set to Alerted."
+      }
+    },
+    {
+      "Type": "EmitNpcResult",
+      "Id": "wake_and_mark",
+      "Label": "Wake and Mark",
+      "ResultId": "wake_and_mark",
+      "Feedback": {
+        "ChatMessage": "The NPC role received the wake_and_mark result."
+      }
+    }
+  ]
+}

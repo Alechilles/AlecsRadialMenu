@@ -1,51 +1,22 @@
 # NPC radial menu example
 
-Copy `Server/RadialMenu/Menus/Example_Npc.json` into an asset pack that depends on Alec's Radial Menu.
+The mod ships a loadable example menu and NPC role:
 
-Merge these branches into the NPC role's `InteractionInstruction.Instructions` array:
+- `Server/RadialMenu/Menus/Example_Npc.json`
+- `Server/NPC/Roles/Examples/Alec_Radial_Menu_Example_Npc.json`
 
-```json
-[
-  {
-    "Continue": true,
-    "Sensor": {
-      "Type": "Any"
-    },
-    "Actions": [
-      {
-        "Type": "SetInteractable",
-        "Interactable": true
-      }
-    ]
-  },
-  {
-    "Sensor": {
-      "Type": "HasInteracted"
-    },
-    "Actions": [
-      {
-        "Type": "OpenRadialMenu",
-        "MenuId": "Example_Npc"
-      }
-    ]
-  },
-  {
-    "Sensor": {
-      "Type": "RadialMenuResult",
-      "MenuId": "Example_Npc",
-      "ResultId": "stay"
-    },
-    "Actions": [
-      {
-        "Type": "SetFlag",
-        "Name": "StayRequested",
-        "SetTo": true
-      }
-    ]
-  }
-]
+Install the mod, enter a world with permission to use NPC commands, and run:
+
+```text
+/npc spawn Alec_Radial_Menu_Example_Npc
 ```
 
-The role must declare `StayRequested` before it uses `SetFlag`. Replace the example states, flag, and registered action with values that exist in your role or mod.
+Interact with the cow to open `Example_Npc`. The menu shows three paths:
 
-`SetNpcState` changes the NPC state immediately. `EmitNpcResult` lets the role run its native action list. `InvokeRegisteredNpcAction` calls a Java handler registered through `RadialMenuApi`.
+- **Sleep** uses `SetNpcState` to set the role state to `Sleep`.
+- **Alert** uses `SetNpcState` to set the role state to `Alerted`.
+- **Wake and Mark** emits `wake_and_mark`. The role's `RadialMenuResult` sensor consumes it, sets `RadialMenuExampleMarked`, and returns the role to `Idle`.
+
+The cow animation and display name show each state. After **Wake and Mark**, the name includes `(marked)` to confirm that the native `SetFlag` action ran.
+
+Hytale allocates a flag slot when a role uses `SetFlag` or a flag sensor. A separate flag declaration is not required. Replace the example states and flag name with values used by your own role.

@@ -2,4 +2,5 @@ target/
 build/
 .idea/
 .tmp/
+/.asset-tools/
 *.iml
