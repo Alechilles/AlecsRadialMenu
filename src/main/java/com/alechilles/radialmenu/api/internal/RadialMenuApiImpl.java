@@ -13,6 +13,9 @@ import com.alechilles.radialmenu.runtime.RadialMenuCatalog;
 import com.alechilles.radialmenu.runtime.RadialMenuRuntimeService;
 import com.alechilles.radialmenu.runtime.RadialMenuNpcActionRegistry;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.component.ComponentAccessor;
+import com.hypixel.hytale.component.Ref;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 public final class RadialMenuApiImpl implements RadialMenuApi {
     private final RadialMenuActionRegistry actionRegistry;
@@ -52,6 +55,14 @@ public final class RadialMenuApiImpl implements RadialMenuApi {
     @Override
     public boolean openMenu(@Nullable Player player, @Nullable String menuKey) {
         return runtimeService.openMenu(player, menuKey, null, "api");
+    }
+
+    @Override
+    public boolean openNpcMenu(@Nullable Player player,
+                               @Nullable String menuKey,
+                               @Nullable Ref<EntityStore> npcRef,
+                               @Nullable ComponentAccessor<EntityStore> accessor) {
+        return runtimeService.openNpcMenu(player, menuKey, npcRef, accessor, "api.npc");
     }
 
     @Override
