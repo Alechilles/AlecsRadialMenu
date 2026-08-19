@@ -15,10 +15,13 @@ import javax.annotation.Nullable;
 
 import com.alechilles.radialmenu.config.RadialMenuConfig;
 import com.alechilles.radialmenu.config.RadialMenuConfig.ExecuteCommandOption;
+import com.alechilles.radialmenu.config.RadialMenuConfig.EmitNpcResultOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.InvokeRegisteredActionOption;
+import com.alechilles.radialmenu.config.RadialMenuConfig.InvokeRegisteredNpcActionOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
 import com.alechilles.radialmenu.config.RadialMenuConfig.OptionVisualOverride;
 import com.alechilles.radialmenu.config.RadialMenuConfig.RunInteractionOption;
+import com.alechilles.radialmenu.config.RadialMenuConfig.SetNpcStateOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StateColors;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StatePalette;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Visual;
@@ -140,6 +143,25 @@ public final class RadialMenuCatalog {
                 if (runInteractionOption.getInteractionType() == InteractionType.Equipped) {
                     issues.add("RunInteraction option '" + option.getId()
                             + "' cannot use InteractionType Equipped without an equipment slot.");
+                }
+                continue;
+            }
+            if (option instanceof SetNpcStateOption setNpcStateOption) {
+                if (setNpcStateOption.getState() == null || setNpcStateOption.getState().isBlank()) {
+                    issues.add("SetNpcState option '" + option.getId() + "' has blank State.");
+                }
+                continue;
+            }
+            if (option instanceof EmitNpcResultOption emitNpcResultOption) {
+                if (emitNpcResultOption.getResultId() == null || emitNpcResultOption.getResultId().isBlank()) {
+                    issues.add("EmitNpcResult option '" + option.getId() + "' has blank ResultId.");
+                }
+                continue;
+            }
+            if (option instanceof InvokeRegisteredNpcActionOption invokeRegisteredNpcActionOption) {
+                if (invokeRegisteredNpcActionOption.getActionId() == null
+                        || invokeRegisteredNpcActionOption.getActionId().isBlank()) {
+                    issues.add("InvokeRegisteredNpcAction option '" + option.getId() + "' has blank ActionId.");
                 }
                 continue;
             }

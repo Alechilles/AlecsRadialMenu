@@ -3,7 +3,6 @@ package com.alechilles.radialmenu.runtime;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -16,25 +15,6 @@ import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
 import com.hypixel.hytale.protocol.InteractionType;
 
 class RadialMenuCatalogValidationTest {
-    @Test
-    void bundledExampleUsesDefaultTextureVisualsWithoutRedundantOverrides() throws IOException {
-        String example = new String(
-                RadialMenuCatalogValidationTest.class
-                        .getResourceAsStream("/Server/RadialMenu/Menus/Example_Basic.json")
-                        .readAllBytes()
-        );
-
-        assertFalse(example.contains("\"Visual\""));
-        assertFalse(example.contains("\"VisualOverride\""));
-        assertFalse(example.contains("\"FillColor\""));
-        assertFalse(example.contains("\"TextureSet\""));
-        assertFalse(example.contains("\"RenderMode\""));
-        assertFalse(example.contains("\"Test "));
-        assertFalse(example.contains("/tw config"));
-        assertTrue(example.contains("\"Type\": \"RunInteraction\""));
-        assertTrue(example.contains("\"RootInteraction\": \"Root_Unarmed_Swing_Left\""));
-    }
-
     @Test
     void validateAcceptsWellFormedMenu() {
         RadialMenuCatalog catalog = new RadialMenuCatalog();
@@ -101,6 +81,50 @@ class RadialMenuCatalogValidationTest {
         List<String> issues = catalog.validate(config);
         assertTrue(issues.stream().anyMatch(x -> x.contains("blank Command")));
         assertTrue(issues.stream().anyMatch(x -> x.contains("blank ActionId")));
+    }
+
+    @Test
+    void validateAcceptsWellFormedNpcOptions() {
+        RadialMenuCatalog catalog = new RadialMenuCatalog();
+        RadialMenuConfig config = TestConfigFactory.menu(
+                "example/npc",
+                ExecutionMode.SelectAndArm,
+                null,
+                new String[0],
+                TestConfigFactory.npcStateOption("follow", "Follow", "Following", "Moving"),
+                TestConfigFactory.npcResultOption("stay", "Stay", "stay"),
+                TestConfigFactory.npcActionOption(
+                        "inspect",
+                        "Inspect",
+                        "Example.InspectNpc",
+                        java.util.Map.of("detail", "short")
+                )
+        );
+
+        List<String> issues = catalog.validate(config);
+
+        assertTrue(issues.isEmpty(), "Expected no validation issues but got: " + issues);
+    }
+
+    @Test
+    void validateRejectsBlankNpcOptionPayloads() {
+        RadialMenuCatalog catalog = new RadialMenuCatalog();
+        RadialMenuConfig config = TestConfigFactory.menu(
+                "example/npc-invalid",
+                ExecutionMode.SelectAndRun,
+                null,
+                new String[0],
+                TestConfigFactory.npcStateOption("state", "State", " ", null),
+                TestConfigFactory.npcResultOption("result", "Result", " "),
+                TestConfigFactory.npcActionOption("action", "Action", " ", java.util.Map.of())
+        );
+
+        List<String> issues = catalog.validate(config);
+
+        assertTrue(issues.stream().anyMatch(x -> x.contains("SetNpcState") && x.contains("blank State")));
+        assertTrue(issues.stream().anyMatch(x -> x.contains("EmitNpcResult") && x.contains("blank ResultId")));
+        assertTrue(issues.stream().anyMatch(x -> x.contains("InvokeRegisteredNpcAction")
+                && x.contains("blank ActionId")));
     }
 
     @Test

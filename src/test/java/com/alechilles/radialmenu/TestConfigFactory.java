@@ -7,11 +7,14 @@ import java.util.Map;
 import com.alechilles.radialmenu.config.RadialMenuConfig;
 import com.alechilles.radialmenu.config.RadialMenuConfig.ExecuteCommandOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.ExecutionMode;
+import com.alechilles.radialmenu.config.RadialMenuConfig.EmitNpcResultOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.InvokeRegisteredActionOption;
+import com.alechilles.radialmenu.config.RadialMenuConfig.InvokeRegisteredNpcActionOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
 import com.alechilles.radialmenu.config.RadialMenuConfig.OptionVisualOverride;
 import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
 import com.alechilles.radialmenu.config.RadialMenuConfig.RunInteractionOption;
+import com.alechilles.radialmenu.config.RadialMenuConfig.SetNpcStateOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StateColors;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StatePalette;
 import com.alechilles.radialmenu.config.RadialMenuConfig.TextureSet;
@@ -70,6 +73,43 @@ public final class TestConfigFactory {
         setField(Option.class, option, "label", label);
         setField(RunInteractionOption.class, option, "rootInteraction", rootInteraction);
         setField(RunInteractionOption.class, option, "interactionType", interactionType);
+        return option;
+    }
+
+    public static SetNpcStateOption npcStateOption(String id,
+                                                   String label,
+                                                   String state,
+                                                   String subState) {
+        SetNpcStateOption option = instantiate(SetNpcStateOption.class);
+        setField(Option.class, option, "id", id);
+        setField(Option.class, option, "label", label);
+        setField(SetNpcStateOption.class, option, "state", state);
+        setField(SetNpcStateOption.class, option, "subState", subState);
+        return option;
+    }
+
+    public static EmitNpcResultOption npcResultOption(String id, String label, String resultId) {
+        EmitNpcResultOption option = instantiate(EmitNpcResultOption.class);
+        setField(Option.class, option, "id", id);
+        setField(Option.class, option, "label", label);
+        setField(EmitNpcResultOption.class, option, "resultId", resultId);
+        return option;
+    }
+
+    public static InvokeRegisteredNpcActionOption npcActionOption(String id,
+                                                                  String label,
+                                                                  String actionId,
+                                                                  Map<String, String> payload) {
+        InvokeRegisteredNpcActionOption option = instantiate(InvokeRegisteredNpcActionOption.class);
+        setField(Option.class, option, "id", id);
+        setField(Option.class, option, "label", label);
+        setField(InvokeRegisteredNpcActionOption.class, option, "actionId", actionId);
+        setField(
+                InvokeRegisteredNpcActionOption.class,
+                option,
+                "payload",
+                payload == null ? Map.of() : payload
+        );
         return option;
     }
 
