@@ -1,0 +1,28 @@
+{
+  "Enabled": true,
+  "ExecutionMode": "SelectAndRun",
+  "DefaultOptionId": "follow",
+  "Options": [
+    {
+      "Type": "SetNpcState",
+      "Id": "follow",
+      "Label": "Follow",
+      "State": "Follow"
+    },
+    {
+      "Type": "EmitNpcResult",
+      "Id": "stay",
+      "Label": "Stay",
+      "ResultId": "stay"
+    },
+    {
+      "Type": "InvokeRegisteredNpcAction",
+      "Id": "inspect",
+      "Label": "Inspect",
+      "ActionId": "Example.InspectNpc",
+      "Payload": {
+        "detail": "short"
+      }
+    }
+  ]
+}
