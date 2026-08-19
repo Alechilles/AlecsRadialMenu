@@ -16,6 +16,7 @@ import com.alechilles.radialmenu.runtime.RadialMenuActionRegistry;
 import com.alechilles.radialmenu.runtime.RadialMenuCatalog;
 import com.alechilles.radialmenu.runtime.RadialMenuRuntimeService;
 import com.alechilles.radialmenu.runtime.RadialMenuSessionStore;
+import com.alechilles.radialmenu.runtime.RadialMenuNpcActionRegistry;
 
 class RadialMenuApiImplTest {
     @Test
@@ -36,6 +37,28 @@ class RadialMenuApiImplTest {
 
         closeable.close();
         assertFalse(api.listActionIds().contains("example.action"));
+    }
+
+    @Test
+    void registerNpcActionHandlerUsesTheTargetAwareRegistry() throws Exception {
+        RadialMenuActionRegistry actions = new RadialMenuActionRegistry();
+        RadialMenuNpcActionRegistry npcActions = new RadialMenuNpcActionRegistry();
+        RadialMenuCatalog catalog = new RadialMenuCatalog();
+        RadialMenuRuntimeService runtime = new RadialMenuRuntimeService(
+                catalog,
+                new RadialMenuSessionStore(),
+                actions,
+                new PlayerCommandDispatcher(null, null),
+                null
+        );
+        RadialMenuApi api = new RadialMenuApiImpl(actions, npcActions, catalog, runtime);
+
+        AutoCloseable closeable = api.registerNpcActionHandler("Example.NpcAction", context -> true);
+        assertTrue(api.listNpcActionIds().contains("example.npcaction"));
+        assertFalse(api.listActionIds().contains("example.npcaction"));
+
+        closeable.close();
+        assertFalse(api.listNpcActionIds().contains("example.npcaction"));
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.alechilles.radialmenu.runtime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.Map;
 
@@ -56,5 +57,25 @@ class RadialMenuRuntimeServiceTest {
         assertFalse(runtime.openMenu(null, "menus/example", null, "test"));
         assertFalse(runtime.selectOption(null, "menus/example", "one", null, "test"));
         assertFalse(runtime.executeSelected(null, "menus/example", null, "test"));
+    }
+
+    @Test
+    void npcMenusAlwaysUseImmediateExecution() {
+        RadialMenuConfig menu = TestConfigFactory.menu(
+                "menus/npc",
+                ExecutionMode.SelectAndArm,
+                null,
+                new String[0],
+                TestConfigFactory.npcResultOption("follow", "Follow", "follow")
+        );
+
+        assertSame(
+                ExecutionMode.SelectAndRun,
+                RadialMenuRuntimeService.resolveMode(menu, ExecutionMode.SelectAndArm, true)
+        );
+        assertSame(
+                ExecutionMode.SelectAndArm,
+                RadialMenuRuntimeService.resolveMode(menu, null, false)
+        );
     }
 }

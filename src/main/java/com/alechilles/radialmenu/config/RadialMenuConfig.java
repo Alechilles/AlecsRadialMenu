@@ -360,6 +360,52 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     .add()
                     .build();
 
+    private static final BuilderCodec<SetNpcStateOption> SET_NPC_STATE_OPTION_CODEC =
+            BuilderCodec.builder(SetNpcStateOption.class, SetNpcStateOption::new, OPTION_BASE_CODEC)
+                    .<String>append(
+                            new KeyedCodec<>("State", Codec.STRING),
+                            (option, value) -> option.state = value,
+                            option -> option.state
+                    )
+                    .add()
+                    .<String>append(
+                            new KeyedCodec<>("SubState", Codec.STRING),
+                            (option, value) -> option.subState = value,
+                            option -> option.subState
+                    )
+                    .add()
+                    .build();
+
+    private static final BuilderCodec<EmitNpcResultOption> EMIT_NPC_RESULT_OPTION_CODEC =
+            BuilderCodec.builder(EmitNpcResultOption.class, EmitNpcResultOption::new, OPTION_BASE_CODEC)
+                    .<String>append(
+                            new KeyedCodec<>("ResultId", Codec.STRING),
+                            (option, value) -> option.resultId = value,
+                            option -> option.resultId
+                    )
+                    .add()
+                    .build();
+
+    private static final BuilderCodec<InvokeRegisteredNpcActionOption> INVOKE_REGISTERED_NPC_ACTION_OPTION_CODEC =
+            BuilderCodec.builder(
+                            InvokeRegisteredNpcActionOption.class,
+                            InvokeRegisteredNpcActionOption::new,
+                            OPTION_BASE_CODEC
+                    )
+                    .<String>append(
+                            new KeyedCodec<>("ActionId", Codec.STRING),
+                            (option, value) -> option.actionId = value,
+                            option -> option.actionId
+                    )
+                    .add()
+                    .<Map<String, String>>append(
+                            new KeyedCodec<>("Payload", MapCodec.STRING_HASH_MAP_CODEC),
+                            (option, value) -> option.payload = value == null ? Collections.emptyMap() : value,
+                            option -> option.payload
+                    )
+                    .add()
+                    .build();
+
     public static final StringCodecMapCodec<Option, BuilderCodec<? extends Option>> OPTION_CODEC =
             new StringCodecMapCodec<>("Type") {
             };
@@ -372,6 +418,13 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                 INVOKE_REGISTERED_ACTION_OPTION_CODEC
         );
         OPTION_CODEC.register("RunInteraction", RunInteractionOption.class, RUN_INTERACTION_OPTION_CODEC);
+        OPTION_CODEC.register("SetNpcState", SetNpcStateOption.class, SET_NPC_STATE_OPTION_CODEC);
+        OPTION_CODEC.register("EmitNpcResult", EmitNpcResultOption.class, EMIT_NPC_RESULT_OPTION_CODEC);
+        OPTION_CODEC.register(
+                "InvokeRegisteredNpcAction",
+                InvokeRegisteredNpcActionOption.class,
+                INVOKE_REGISTERED_NPC_ACTION_OPTION_CODEC
+        );
     }
 
     public static final ArrayCodec<Option> OPTION_ARRAY_CODEC = new ArrayCodec<>(OPTION_CODEC, Option[]::new);
@@ -580,6 +633,10 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
         public OptionVisualOverride getVisualOverride() {
             return visualOverride;
         }
+
+        public boolean requiresNpcTarget() {
+            return false;
+        }
     }
 
     public static final class ExecuteCommandOption extends Option {
@@ -618,6 +675,60 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
         @Nonnull
         public InteractionType getInteractionType() {
             return interactionType == null ? InteractionType.Primary : interactionType;
+        }
+    }
+
+    public static final class SetNpcStateOption extends Option {
+        private String state;
+        private String subState;
+
+        @Nullable
+        public String getState() {
+            return state;
+        }
+
+        @Nullable
+        public String getSubState() {
+            return subState;
+        }
+
+        @Override
+        public boolean requiresNpcTarget() {
+            return true;
+        }
+    }
+
+    public static final class EmitNpcResultOption extends Option {
+        private String resultId;
+
+        @Nullable
+        public String getResultId() {
+            return resultId;
+        }
+
+        @Override
+        public boolean requiresNpcTarget() {
+            return true;
+        }
+    }
+
+    public static final class InvokeRegisteredNpcActionOption extends Option {
+        private String actionId;
+        private Map<String, String> payload = Collections.emptyMap();
+
+        @Nullable
+        public String getActionId() {
+            return actionId;
+        }
+
+        @Nonnull
+        public Map<String, String> getPayload() {
+            return payload;
+        }
+
+        @Override
+        public boolean requiresNpcTarget() {
+            return true;
         }
     }
 

@@ -11,12 +11,16 @@ import com.alechilles.radialmenu.api.internal.RadialMenuApiImpl;
 import com.alechilles.radialmenu.assets.RadialMenuAssetPackCoordinator;
 import com.alechilles.radialmenu.config.RadialMenuConfig;
 import com.alechilles.radialmenu.interactions.RadialMenuInteraction;
+import com.alechilles.radialmenu.npc.RadialMenuResultComponent;
+import com.alechilles.radialmenu.npc.BuilderActionOpenRadialMenu;
+import com.alechilles.radialmenu.npc.BuilderSensorRadialMenuResult;
 import com.alechilles.radialmenu.metrics.RadialMenuHStatsIntegration;
 import com.alechilles.radialmenu.runtime.PlayerCommandDispatcher;
 import com.alechilles.radialmenu.runtime.RadialMenuActionRegistry;
 import com.alechilles.radialmenu.runtime.RadialMenuCatalog;
 import com.alechilles.radialmenu.runtime.RadialMenuRuntimeService;
 import com.alechilles.radialmenu.runtime.RadialMenuSessionStore;
+import com.alechilles.radialmenu.runtime.RadialMenuNpcActionRegistry;
 import com.hypixel.hytale.assetstore.event.LoadedAssetsEvent;
 import com.hypixel.hytale.assetstore.event.RemovedAssetsEvent;
 import com.hypixel.hytale.assetstore.map.DefaultAssetMap;
@@ -25,6 +29,7 @@ import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.server.core.modules.interaction.interaction.config.Interaction;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
+import com.hypixel.hytale.server.npc.NPCPlugin;
 
 public final class RadialMenuMod extends JavaPlugin {
     private static RadialMenuMod instance;
@@ -32,6 +37,7 @@ public final class RadialMenuMod extends JavaPlugin {
     private RadialMenuCatalog menuCatalog;
     private RadialMenuSessionStore sessionStore;
     private RadialMenuActionRegistry actionRegistry;
+    private RadialMenuNpcActionRegistry npcActionRegistry;
     private RadialMenuRuntimeService runtimeService;
     private RadialMenuApi api;
     private RadialMenuAssetPackCoordinator assetPackCoordinator;
@@ -48,10 +54,31 @@ public final class RadialMenuMod extends JavaPlugin {
         menuCatalog = new RadialMenuCatalog();
         sessionStore = new RadialMenuSessionStore();
         actionRegistry = new RadialMenuActionRegistry();
+        npcActionRegistry = new RadialMenuNpcActionRegistry();
 
         PlayerCommandDispatcher commandDispatcher = new PlayerCommandDispatcher(this, getLogger());
-        runtimeService = new RadialMenuRuntimeService(menuCatalog, sessionStore, actionRegistry, commandDispatcher, getLogger());
-        api = new RadialMenuApiImpl(actionRegistry, menuCatalog, runtimeService);
+        RadialMenuResultComponent.register(this);
+        NPCPlugin npcPlugin = NPCPlugin.get();
+        if (npcPlugin == null) {
+            throw new IllegalStateException("Hytale NPC plugin is required for radial menu NPC actions.");
+        }
+        npcPlugin.registerCoreComponentType(
+                BuilderActionOpenRadialMenu.BUILDER_ID,
+                BuilderActionOpenRadialMenu::new
+        );
+        npcPlugin.registerCoreComponentType(
+                BuilderSensorRadialMenuResult.BUILDER_ID,
+                BuilderSensorRadialMenuResult::new
+        );
+        runtimeService = new RadialMenuRuntimeService(
+                menuCatalog,
+                sessionStore,
+                actionRegistry,
+                npcActionRegistry,
+                commandDispatcher,
+                getLogger()
+        );
+        api = new RadialMenuApiImpl(actionRegistry, npcActionRegistry, menuCatalog, runtimeService);
         assetPackCoordinator = new RadialMenuAssetPackCoordinator(this);
         hStatsIntegration = new RadialMenuHStatsIntegration(this);
 
@@ -88,6 +115,7 @@ public final class RadialMenuMod extends JavaPlugin {
         api = null;
         runtimeService = null;
         actionRegistry = null;
+        npcActionRegistry = null;
         menuCatalog = null;
         sessionStore = null;
         assetPackCoordinator = null;

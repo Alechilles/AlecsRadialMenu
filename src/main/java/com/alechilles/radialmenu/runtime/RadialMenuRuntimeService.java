@@ -8,18 +8,26 @@ import javax.annotation.Nullable;
 
 import com.alechilles.radialmenu.api.RadialMenuActionContext;
 import com.alechilles.radialmenu.api.RadialMenuActionHandler;
+import com.alechilles.radialmenu.api.RadialMenuNpcActionContext;
+import com.alechilles.radialmenu.api.RadialMenuNpcActionHandler;
+import com.alechilles.radialmenu.api.RadialMenuNpcTarget;
 import com.alechilles.radialmenu.config.RadialMenuConfig;
+import com.alechilles.radialmenu.config.RadialMenuConfig.EmitNpcResultOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.ExecuteCommandOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.ExecutionMode;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Feedback;
 import com.alechilles.radialmenu.config.RadialMenuConfig.InvokeRegisteredActionOption;
+import com.alechilles.radialmenu.config.RadialMenuConfig.InvokeRegisteredNpcActionOption;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
 import com.alechilles.radialmenu.config.RadialMenuConfig.RunInteractionOption;
+import com.alechilles.radialmenu.config.RadialMenuConfig.SetNpcStateOption;
 import com.alechilles.radialmenu.localization.RadialMenuLocalizedText;
+import com.alechilles.radialmenu.npc.RadialMenuNpcTargetHandle;
 import com.alechilles.radialmenu.ui.RadialMenuPage;
 import com.hypixel.hytale.assetstore.map.DefaultAssetMap;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
+import com.hypixel.hytale.component.ComponentAccessor;
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.entity.InteractionContext;
@@ -32,8 +40,10 @@ public final class RadialMenuRuntimeService {
     private final RadialMenuCatalog catalog;
     private final RadialMenuSessionStore sessions;
     private final RadialMenuActionRegistry actionRegistry;
+    private final RadialMenuNpcActionRegistry npcActionRegistry;
     private final PlayerCommandDispatcher commandDispatcher;
     private final RadialMenuInteractionRunner interactionRunner;
+    private final RadialMenuNpcEffectExecutor npcEffectExecutor;
     @Nullable
     private final HytaleLogger logger;
 
@@ -45,17 +55,57 @@ public final class RadialMenuRuntimeService {
         this(catalog, sessions, actionRegistry, commandDispatcher, new HytaleInteractionRunner(logger), logger);
     }
 
+    public RadialMenuRuntimeService(@Nonnull RadialMenuCatalog catalog,
+                                    @Nonnull RadialMenuSessionStore sessions,
+                                    @Nonnull RadialMenuActionRegistry actionRegistry,
+                                    @Nonnull RadialMenuNpcActionRegistry npcActionRegistry,
+                                    @Nonnull PlayerCommandDispatcher commandDispatcher,
+                                    @Nullable HytaleLogger logger) {
+        this(
+                catalog,
+                sessions,
+                actionRegistry,
+                npcActionRegistry,
+                commandDispatcher,
+                new HytaleInteractionRunner(logger),
+                new HytaleRadialMenuNpcEffectExecutor(),
+                logger
+        );
+    }
+
     RadialMenuRuntimeService(@Nonnull RadialMenuCatalog catalog,
                              @Nonnull RadialMenuSessionStore sessions,
                              @Nonnull RadialMenuActionRegistry actionRegistry,
                              @Nonnull PlayerCommandDispatcher commandDispatcher,
                              @Nonnull RadialMenuInteractionRunner interactionRunner,
                              @Nullable HytaleLogger logger) {
+        this(
+                catalog,
+                sessions,
+                actionRegistry,
+                new RadialMenuNpcActionRegistry(),
+                commandDispatcher,
+                interactionRunner,
+                new HytaleRadialMenuNpcEffectExecutor(),
+                logger
+        );
+    }
+
+    RadialMenuRuntimeService(@Nonnull RadialMenuCatalog catalog,
+                             @Nonnull RadialMenuSessionStore sessions,
+                             @Nonnull RadialMenuActionRegistry actionRegistry,
+                             @Nonnull RadialMenuNpcActionRegistry npcActionRegistry,
+                             @Nonnull PlayerCommandDispatcher commandDispatcher,
+                             @Nonnull RadialMenuInteractionRunner interactionRunner,
+                             @Nonnull RadialMenuNpcEffectExecutor npcEffectExecutor,
+                             @Nullable HytaleLogger logger) {
         this.catalog = catalog;
         this.sessions = sessions;
         this.actionRegistry = actionRegistry;
+        this.npcActionRegistry = npcActionRegistry;
         this.commandDispatcher = commandDispatcher;
         this.interactionRunner = interactionRunner;
+        this.npcEffectExecutor = npcEffectExecutor;
         this.logger = logger;
     }
 
@@ -73,6 +123,26 @@ public final class RadialMenuRuntimeService {
                             @Nullable String menuKey,
                             @Nullable ExecutionMode modeOverride,
                             @Nonnull String source) {
+        return openMenu(player, menuKey, modeOverride, source, null);
+    }
+
+    public boolean openNpcMenu(@Nullable Player player,
+                               @Nullable String menuKey,
+                               @Nullable Ref<EntityStore> npcRef,
+                               @Nullable ComponentAccessor<EntityStore> accessor,
+                               @Nonnull String source) {
+        RadialMenuNpcTargetHandle targetHandle = RadialMenuNpcTargetHandle.capture(npcRef, accessor);
+        if (targetHandle == null) {
+            return false;
+        }
+        return openMenu(player, menuKey, ExecutionMode.SelectAndRun, source, targetHandle);
+    }
+
+    private boolean openMenu(@Nullable Player player,
+                             @Nullable String menuKey,
+                             @Nullable ExecutionMode modeOverride,
+                             @Nonnull String source,
+                             @Nullable RadialMenuNpcTargetHandle targetHandle) {
         refreshCatalogFromAssetStore();
         String normalizedMenuKey = RadialMenuCatalog.normalizeKey(menuKey);
         if (player == null) {
@@ -109,6 +179,14 @@ public final class RadialMenuRuntimeService {
             warnAndLog(player, "radialmenu.warning.open.unavailable", "Entity store unavailable for menu: " + normalizedMenuKey);
             return false;
         }
+        if (targetHandle != null && targetHandle.resolve(store) == null) {
+            warnAndLog(
+                    player,
+                    "radialmenu.warning.open.unavailable",
+                    "NPC target is not available in the player's world for menu: " + normalizedMenuKey
+            );
+            return false;
+        }
 
         String selectedOptionId = sessions.getSelectedOptionId(player.getUuid(), normalizedMenuKey);
         RadialMenuPage page = new RadialMenuPage(
@@ -116,7 +194,24 @@ public final class RadialMenuRuntimeService {
                 normalizedMenuKey,
                 menu,
                 selectedOptionId,
-                optionId -> selectOption(player, normalizedMenuKey, optionId, modeOverride, source + ".menu"),
+                targetHandle != null,
+                (optionId, callbackPlayerRef, callbackStore) -> {
+                    if (!callbackPlayerRef.isValid() || callbackPlayerRef.getStore() != callbackStore) {
+                        return false;
+                    }
+                    Player currentPlayer = callbackStore.getComponent(callbackPlayerRef, Player.getComponentType());
+                    if (currentPlayer == null) {
+                        return false;
+                    }
+                    return handleOptionSelection(
+                            currentPlayer,
+                            normalizedMenuKey,
+                            optionId,
+                            modeOverride,
+                            source + ".menu",
+                            targetHandle == null ? null : targetHandle.resolve(callbackStore)
+                    );
+                },
                 logger
         );
         player.getPageManager().openCustomPage(playerRef, store, page);
@@ -184,7 +279,8 @@ public final class RadialMenuRuntimeService {
                 selected,
                 modeOverride,
                 source + ".execute",
-                activeContext
+                activeContext,
+                null
         );
     }
 
@@ -193,6 +289,23 @@ public final class RadialMenuRuntimeService {
                                           @Nullable String optionId,
                                           @Nullable ExecutionMode modeOverride,
                                           @Nonnull String source) {
+        return handleOptionSelection(player, menuKey, optionId, modeOverride, source, null);
+    }
+
+    boolean selectNpcOption(@Nonnull Player player,
+                            @Nonnull String menuKey,
+                            @Nullable String optionId,
+                            @Nonnull RadialMenuNpcTarget target,
+                            @Nonnull String source) {
+        return handleOptionSelection(player, menuKey, optionId, ExecutionMode.SelectAndRun, source, target);
+    }
+
+    private boolean handleOptionSelection(@Nonnull Player player,
+                                          @Nonnull String menuKey,
+                                          @Nullable String optionId,
+                                          @Nullable ExecutionMode modeOverride,
+                                          @Nonnull String source,
+                                          @Nullable RadialMenuNpcTarget npcTarget) {
         RadialMenuConfig menu = catalog.getByMenuKey(menuKey);
         if (menu == null) {
             warnAndLog(player, "radialmenu.warning.menu.unavailable", "Unknown menu key: " + menuKey, menuKey);
@@ -205,15 +318,33 @@ public final class RadialMenuRuntimeService {
             return false;
         }
 
+        if (option.requiresNpcTarget() && npcTarget == null) {
+            warnAndLog(
+                    player,
+                    "radialmenu.warning.selection.unavailable",
+                    "NPC target unavailable for option: " + option.getId()
+            );
+            return false;
+        }
+
         sessions.setSelectedOptionId(player.getUuid(), menuKey, option.getId());
-        ExecutionMode mode = resolveMode(menu, modeOverride);
+        ExecutionMode mode = resolveMode(menu, modeOverride, npcTarget != null);
         if (mode == ExecutionMode.SelectAndArm) {
             sendInfo(player, "radialmenu.info.selection.selected", resolveOptionLabel(player, option));
             applyFeedback(player, option.getFeedback());
             return true;
         }
 
-        return executeOption(player, menuKey, menu, option, modeOverride, source + ".selectAndRun", null);
+        return executeOption(
+                player,
+                menuKey,
+                menu,
+                option,
+                modeOverride,
+                source + ".selectAndRun",
+                null,
+                npcTarget
+        );
     }
 
     private boolean executeOption(@Nonnull Player player,
@@ -222,7 +353,8 @@ public final class RadialMenuRuntimeService {
                                   @Nonnull Option option,
                                   @Nullable ExecutionMode modeOverride,
                                   @Nonnull String source,
-                                  @Nullable InteractionContext activeContext) {
+                                  @Nullable InteractionContext activeContext,
+                                  @Nullable RadialMenuNpcTarget npcTarget) {
         boolean executed;
 
         if (option instanceof ExecuteCommandOption executeCommandOption) {
@@ -306,6 +438,70 @@ public final class RadialMenuRuntimeService {
                 );
                 return false;
             }
+        } else if (option instanceof SetNpcStateOption setNpcStateOption) {
+            executed = npcEffectExecutor.setState(
+                    npcTarget,
+                    setNpcStateOption.getState(),
+                    setNpcStateOption.getSubState()
+            );
+            if (!executed) {
+                warnAndLog(player, "radialmenu.warning.execute.unsupported", "Failed to set NPC state.");
+                return false;
+            }
+        } else if (option instanceof EmitNpcResultOption emitNpcResultOption) {
+            executed = npcEffectExecutor.emitResult(
+                    npcTarget,
+                    player.getUuid(),
+                    menuKey,
+                    emitNpcResultOption.getResultId(),
+                    System.currentTimeMillis()
+            );
+            if (!executed) {
+                warnAndLog(player, "radialmenu.warning.execute.unsupported", "Failed to emit NPC result.");
+                return false;
+            }
+        } else if (option instanceof InvokeRegisteredNpcActionOption invokeNpcActionOption) {
+            String actionId = invokeNpcActionOption.getActionId();
+            RadialMenuNpcActionHandler handler = npcActionRegistry.get(actionId);
+            if (npcTarget == null || actionId == null || actionId.isBlank() || handler == null) {
+                warnAndLog(
+                        player,
+                        "radialmenu.warning.execute.handlerMissing",
+                        "No NPC handler for actionId: " + actionId,
+                        actionId
+                );
+                return false;
+            }
+            RadialMenuNpcActionContext context = new RadialMenuNpcActionContext(
+                    player,
+                    menuKey,
+                    option.getId() == null ? "unknown" : option.getId(),
+                    actionId,
+                    source,
+                    invokeNpcActionOption.getPayload(),
+                    npcTarget
+            );
+            try {
+                executed = handler.handle(context);
+            } catch (Throwable ex) {
+                if (logger != null) {
+                    logger.at(Level.WARNING).withCause(ex).log(
+                            "RadialMenu NPC action handler threw for actionId '" + actionId
+                                    + "' on menu '" + menuKey + "'."
+                    );
+                }
+                warn(player, "radialmenu.warning.execute.handlerFailed", actionId);
+                return false;
+            }
+            if (!executed) {
+                warnAndLog(
+                        player,
+                        "radialmenu.warning.execute.handlerFailed",
+                        "NPC action handler returned false: " + actionId,
+                        actionId
+                );
+                return false;
+            }
         } else {
             warnAndLog(player, "radialmenu.warning.execute.unsupported", "Unsupported option type for menu: " + menuKey);
             return false;
@@ -340,7 +536,12 @@ public final class RadialMenuRuntimeService {
     }
 
     @Nonnull
-    private ExecutionMode resolveMode(@Nonnull RadialMenuConfig menu, @Nullable ExecutionMode modeOverride) {
+    static ExecutionMode resolveMode(@Nonnull RadialMenuConfig menu,
+                                     @Nullable ExecutionMode modeOverride,
+                                     boolean npcTargeted) {
+        if (npcTargeted) {
+            return ExecutionMode.SelectAndRun;
+        }
         return modeOverride != null ? modeOverride : menu.getExecutionMode();
     }
 

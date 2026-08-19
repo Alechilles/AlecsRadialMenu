@@ -14,7 +14,9 @@
   "Website": "",
   "Main": "com.alechilles.radialmenu.RadialMenuMod",
   "ServerVersion": "0.5.x",
-  "Dependencies": {},
+  "Dependencies": {
+    "Hytale:NPC": "*"
+  },
   "OptionalDependencies": {},
   "LoadBefore": {},
   "DisabledByDefault": false,
