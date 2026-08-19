@@ -3,6 +3,7 @@ package com.alechilles.radialmenu.runtime;
 import java.util.UUID;
 
 import com.alechilles.radialmenu.api.RadialMenuNpcTarget;
+import com.alechilles.radialmenu.npc.NpcSupportAccess;
 import com.alechilles.radialmenu.npc.RadialMenuResultComponent;
 import com.hypixel.hytale.component.ComponentType;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
@@ -17,7 +18,14 @@ final class HytaleRadialMenuNpcEffectExecutor implements RadialMenuNpcEffectExec
             return false;
         }
         try {
-            StateSupport stateSupport = target.npc().getRole().getStateSupport();
+            StateSupport stateSupport = NpcSupportAccess.state(
+                    target.npc().getRole(),
+                    target.reference(),
+                    target.store()
+            );
+            if (stateSupport == null) {
+                return false;
+            }
             int stateIndex = stateSupport.getStateHelper().getStateIndex(state.trim());
             if (stateIndex < 0) {
                 return false;

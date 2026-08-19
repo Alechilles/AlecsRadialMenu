@@ -29,7 +29,7 @@ configurations.named('testImplementation') {
 hytaleTools {
     hytaleVersion = localProperty('hytale_version')
     patchline = localProperty('hytale_patchline')
-    manifestServerVersion = '0.5.x'
+    manifestServerVersion = localProperty('hytale_server_version_range')
     manifestGroup = 'Alechilles'
     modId = "Alec's Radial Menu"
     modDescription = 'Standalone radial menu framework for Hytale mods.'
@@ -37,6 +37,7 @@ hytaleTools {
     mainClass = 'com.alechilles.radialmenu.RadialMenuMod'
     includesPack = true
     bundleAssetEditorRuntime = false
+    manifestDependencies = 'Hytale:AssetModule=*,Hytale:NPC=*'
 }
 
 tasks.named('jar') {

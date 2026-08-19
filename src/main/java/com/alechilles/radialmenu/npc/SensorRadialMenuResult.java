@@ -9,7 +9,9 @@ import com.hypixel.hytale.server.core.entity.entities.Player;
 import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 import com.hypixel.hytale.server.npc.asset.builder.BuilderSupport;
 import com.hypixel.hytale.server.npc.corecomponents.SensorBase;
+import com.hypixel.hytale.server.npc.instructions.ExecutionSupport;
 import com.hypixel.hytale.server.npc.role.Role;
+import com.hypixel.hytale.server.npc.role.support.StateSupport;
 import com.hypixel.hytale.server.npc.sensorinfo.InfoProvider;
 
 public final class SensorRadialMenuResult extends SensorBase {
@@ -23,15 +25,34 @@ public final class SensorRadialMenuResult extends SensorBase {
         this.resultId = builder.getResultId(support);
     }
 
-    @Override
     public boolean matches(@Nonnull Ref<EntityStore> npcRef,
                            @Nonnull Role role,
                            double dt,
                            @Nonnull Store<EntityStore> store) {
-        if (!super.matches(npcRef, role, dt, store)) {
+        if (once && triggered) {
             return false;
         }
-        Ref<EntityStore> playerRef = role.getStateSupport().getInteractionIterationTarget();
+        return matchesResult(npcRef, NpcSupportAccess.state(role, npcRef, store), store);
+    }
+
+    @Override
+    public boolean matches(@Nonnull Ref<EntityStore> npcRef,
+                           @Nonnull ExecutionSupport support,
+                           double dt,
+                           @Nonnull Store<EntityStore> store) {
+        if (!super.matches(npcRef, support, dt, store)) {
+            return false;
+        }
+        return matchesResult(npcRef, support.getStateSupport(), store);
+    }
+
+    private boolean matchesResult(@Nonnull Ref<EntityStore> npcRef,
+                                  @Nullable StateSupport stateSupport,
+                                  @Nonnull Store<EntityStore> store) {
+        if (stateSupport == null) {
+            return false;
+        }
+        Ref<EntityStore> playerRef = stateSupport.getInteractionIterationTarget();
         if (playerRef == null || !playerRef.isValid()) {
             return false;
         }
