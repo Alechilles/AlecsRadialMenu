@@ -330,7 +330,6 @@ public final class RadialMenuRuntimeService {
         sessions.setSelectedOptionId(player.getUuid(), menuKey, option.getId());
         ExecutionMode mode = resolveMode(menu, modeOverride, npcTarget != null);
         if (mode == ExecutionMode.SelectAndArm) {
-            sendInfo(player, "radialmenu.info.selection.selected", resolveOptionLabel(player, option));
             applyFeedback(player, option.getFeedback());
             return true;
         }
@@ -507,7 +506,6 @@ public final class RadialMenuRuntimeService {
             return false;
         }
 
-        sendInfo(player, "radialmenu.info.execute.success", resolveOptionLabel(player, option));
         applyFeedback(player, option.getFeedback());
         if (logger != null && modeOverride != null && modeOverride != menu.getExecutionMode()) {
             logger.at(Level.FINER).log("RadialMenu mode override used for menu '" + menuKey + "': " + modeOverride.name());
@@ -545,20 +543,6 @@ public final class RadialMenuRuntimeService {
         return modeOverride != null ? modeOverride : menu.getExecutionMode();
     }
 
-    @Nonnull
-    private String resolveOptionLabel(@Nonnull Player player, @Nonnull Option option) {
-        if (option.getLabel() != null && !option.getLabel().isBlank()) {
-            return option.getLabel();
-        }
-        if (option.getLabelKey() != null && !option.getLabelKey().isBlank()) {
-            return RadialMenuLocalizedText.resolve(player, option.getLabelKey());
-        }
-        if (option.getId() != null && !option.getId().isBlank()) {
-            return option.getId();
-        }
-        return RadialMenuLocalizedText.resolve(player, "radialmenu.ui.unknownOption");
-    }
-
     private void warnAndLog(@Nonnull Player player,
                             @Nonnull String translationKey,
                             @Nonnull String logMessage,
@@ -570,10 +554,6 @@ public final class RadialMenuRuntimeService {
     }
 
     private void warn(@Nonnull Player player, @Nonnull String translationKey, Object... args) {
-        sendRaw(player, RadialMenuLocalizedText.format(player, translationKey, args));
-    }
-
-    private void sendInfo(@Nonnull Player player, @Nonnull String translationKey, Object... args) {
         sendRaw(player, RadialMenuLocalizedText.format(player, translationKey, args));
     }
 

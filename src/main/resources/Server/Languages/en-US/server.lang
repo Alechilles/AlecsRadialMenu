@@ -5,9 +5,6 @@ radialmenu.ui.current.none=Current: None
 radialmenu.ui.current.value=Current: {0}
 radialmenu.ui.unknownOption=Unknown
 
-radialmenu.info.selection.selected=Selected option: {0}
-radialmenu.info.execute.success=Executed: {0}
-
 radialmenu.warning.menu.unavailable=This radial menu is unavailable: {0}
 radialmenu.warning.selection.unavailable=No selectable option is available.
 radialmenu.warning.open.unavailable=Unable to open the radial menu right now.
