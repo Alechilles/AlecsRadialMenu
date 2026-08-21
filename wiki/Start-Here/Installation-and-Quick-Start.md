@@ -21,10 +21,10 @@ The plugin manifest requires the Hytale asset and NPC modules. These modules are
 
 ## Supported server versions
 
-Version `2.0.0` declares this server range:
+Version `2.0.1` declares this server range:
 
 ```text
->=0.5.7 <0.7.0 || >=0.6.0-pre.1 <0.6.0
+>=0.5.0 <0.7.0
 ```
 
 See [Compatibility and Limits](/mod/alecs-radial-menu/compatibility-and-limits) before you use another server build.

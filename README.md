@@ -1,6 +1,6 @@
 # Alec's Radial Menu
 
-Asset-driven radial menu framework mod for Hytale Server `0.5.7` and compatible `0.6` prereleases.
+Asset-driven radial menu framework mod for Hytale Server `0.5.x` and compatible `0.6` prereleases.
 
 ## Documentation
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.1
+- Removed automatic selection and execution chat messages so menu actions only show configured feedback.
+- Updated the bundled mod and telemetry consent icons to use Alec's Radial Menu branding.
+- Expanded declared Hytale Server compatibility to `>=0.5.0 <0.7.0` and aligned the build and manifest values.
+
 ## 2.0.0
 - Added NPC-opened radial menus with target-aware options for state changes, named instruction results, and registered Java actions.
 - Added the `OpenRadialMenu` NPC action and the consuming `RadialMenuResult` sensor, with shipped NPC role and menu examples.
