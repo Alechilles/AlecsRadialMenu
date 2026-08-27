@@ -1,5 +1,8 @@
 # Changelog
 
+## 2.0.2
+- Confirmed stable Hytale `0.6.0` support with the declared server range `>=0.5.0 <0.7.0`.
+
 ## 2.0.1
 - Removed automatic selection and execution chat messages so menu actions only show configured feedback.
 - Updated the bundled mod and telemetry consent icons to use Alec's Radial Menu branding.

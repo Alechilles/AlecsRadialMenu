@@ -11,7 +11,7 @@ Parent: [Reference Library](/mod/alecs-radial-menu/reference-library) · [Home](
 
 ## Declared compatibility
 
-Alec's Radial Menu version `2.0.1` declares:
+Alec's Radial Menu version `2.0.2` declares:
 
 ```text
 >=0.5.0 <0.7.0

@@ -1,14 +1,10 @@
-# Alec's Radial Menu v2.0.1
+# Alec's Radial Menu v2.0.2
 
 ## Summary
-This patch release removes redundant chat messages, updates the bundled icons, and expands declared Hytale Server compatibility.
+This hotfix confirms stable Hytale 0.6.0 support.
 
 ## Changed
-- Menu actions now show only the feedback configured by the menu author. The mod no longer sends automatic selection or execution messages.
-- The mod icon and telemetry consent icon now use Alec's Radial Menu branding.
-
-## Fixes
-- Aligned the compatibility range in the Gradle build and both manifests.
+- Confirmed the existing `>=0.5.0 <0.7.0` compatibility range for stable Hytale 0.6.0.
 
 ## Compatibility
 - Hytale Server: `>=0.5.0 <0.7.0`
@@ -16,4 +12,4 @@ This patch release removes redundant chat messages, updates the bundled icons, a
 - Marketplace dependency: Alec's Telemetry 1.1.0
 
 ## Files
-- `Alec's Radial Menu v2.0.1.jar`
+- `Alec's Radial Menu v2.0.2.jar`
