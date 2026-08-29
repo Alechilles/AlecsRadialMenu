@@ -15,7 +15,6 @@ import javax.imageio.ImageIO;
 
 import com.alechilles.radialmenu.config.RadialMenuConfig;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
-import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
 import com.alechilles.radialmenu.localization.RadialMenuLocalizedText;
 import com.alechilles.radialmenu.ui.RadialMenuVisualResolver.ResolvedOptionVisual;
 import com.hypixel.hytale.codec.Codec;
@@ -38,13 +37,12 @@ import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
 
 public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage.RadialMenuEventData> {
     public static final String UI_PATH = "RadialMenu.ui";
-    private static final String VECTOR_TEXTURE_PREFIX = "RadialMenu/Vector";
-
     private static final String EVENT_OPTION_ID = "OptionId";
     private static final String EVENT_ACTION = "Action";
     private static final String ACTION_SELECT = "Select";
     private static final String CLOSE_OPTION_ID = "__close__";
     private static final int MAX_OPTIONS = 8;
+    private static final String[] TEXTURE_STATES = new String[] {"Default", "Hover", "Pressed"};
     /**
      * Mapping from logical option slot index (legacy wheel order) to texture file index
      * for the new exported custom-slice layout.
@@ -142,56 +140,46 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         commandBuilder.set("#RadialMenuCurrent.Text", resolveCurrentLabel());
 
         RadialMenuConfig.Visual visual = config.getVisual();
-        RenderMode renderMode = visual.getRenderMode();
-        boolean vectorMode = renderMode == RenderMode.Vector;
         String texturePrefix = resolveTexturePrefix(config);
-        boolean fullWheelTextureMode = !vectorMode && isFullWheelTextureSet(texturePrefix);
+        boolean fullWheelTextureMode = isFullWheelTextureSet(texturePrefix);
 
         applyGeometry(commandBuilder, visual.getGeometry());
-        applyRingVisuals(commandBuilder, texturePrefix, visual, vectorMode);
+        applyRingVisuals(commandBuilder, texturePrefix);
 
         for (int i = 0; i < MAX_OPTIONS; i++) {
             String buttonSelector = "#CommandButton" + i;
             String visualSelector = "#CommandVisual" + i;
-            String borderSelector = "#CommandBorder" + i;
             String labelSelector = "#CommandLabel" + i;
             if (i >= options.length) {
                 commandBuilder.set(visualSelector + ".Visible", false);
                 commandBuilder.set(buttonSelector + ".Visible", false);
-                commandBuilder.set(borderSelector + ".Visible", false);
                 commandBuilder.set(labelSelector + ".Visible", false);
                 continue;
             }
 
             DisplayOption option = options[i];
-            commandBuilder.set(visualSelector + ".Visible", !vectorMode && !fullWheelTextureMode);
+            commandBuilder.set(visualSelector + ".Visible", !fullWheelTextureMode);
             commandBuilder.set(buttonSelector + ".Visible", true);
-            commandBuilder.set(borderSelector + ".Visible", vectorMode);
             commandBuilder.set(buttonSelector + ".Text", "");
             commandBuilder.set(labelSelector + ".Visible", true);
             commandBuilder.set(labelSelector + ".Text", option.label());
 
-            applyLabelGeometry(commandBuilder, labelSelector, visual.getGeometry(), i, texturePrefix, vectorMode);
+            applyLabelGeometry(commandBuilder, labelSelector, visual.getGeometry(), i);
             applyButtonGeometry(
                     commandBuilder,
                     buttonSelector,
-                    borderSelector,
                     visual.getGeometry(),
                     i,
-                    texturePrefix,
-                    vectorMode,
-                    Math.max(0, visual.getBorderThicknessPx())
+                    texturePrefix
             );
             applyButtonVisuals(
                     commandBuilder,
                     visualSelector,
                     buttonSelector,
-                    borderSelector,
                     labelSelector,
                     texturePrefix,
                     option,
-                    i,
-                    vectorMode
+                    i
             );
 
             if (option.enabled()) {
@@ -244,47 +232,24 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
     }
 
     private void applyRingVisuals(@Nonnull UICommandBuilder commandBuilder,
-                                  @Nonnull String texturePrefix,
-                                  @Nonnull RadialMenuConfig.Visual visual,
-                                  boolean vectorMode) {
+                                  @Nonnull String texturePrefix) {
         // Legacy outer/inner wheel rings are intentionally disabled for the standalone radial menu.
         commandBuilder.set("#CommandWheelOuterRing.Visible", false);
         commandBuilder.set("#CommandWheelInnerRing.Visible", false);
         commandBuilder.set("#CommandWheelCenterPanel.Visible", true);
-        commandBuilder.set("#CommandWheelCenterBorder.Visible", vectorMode);
-
-        String centerTexture = vectorMode
-                ? texturePrefix + "/CommandWheelCenterPanel_Fill.png"
-                : texturePrefix + "/CommandWheelCenterPanel.png";
-        String centerFillColor = vectorMode ? visual.getStates().getDefaultState().getFillColor() : null;
         commandBuilder.setObject(
                 "#CommandWheelCenterPanel.Background",
-                buildPatchStyle(centerTexture, centerFillColor)
+                buildPatchStyle(texturePrefix + "/CommandWheelCenterPanel.png", null)
         );
-        if (vectorMode) {
-            commandBuilder.setObject(
-                    "#CommandWheelCenterBorder.Background",
-                    buildPatchStyle(
-                            texturePrefix + "/CommandWheelCenterPanel_Border.png",
-                            visual.getStates().getDefaultState().getBorderColor()
-                    )
-            );
-        }
-        if (vectorMode) {
-            commandBuilder.set("#RadialMenuCurrent.Style.TextColor", visual.getStates().getDefaultState().getTextColor());
-            commandBuilder.set("#RadialMenuCurrent.Style.OutlineColor", visual.getStates().getDefaultState().getBorderColor());
-        }
     }
 
     private void applyButtonVisuals(@Nonnull UICommandBuilder commandBuilder,
                                     @Nonnull String visualSelector,
                                     @Nonnull String buttonSelector,
-                                    @Nonnull String borderSelector,
                                     @Nonnull String labelSelector,
                                     @Nonnull String texturePrefix,
                                     @Nonnull DisplayOption displayOption,
-                                    int optionIndex,
-                                    boolean vectorMode) {
+                                    int optionIndex) {
         Option option = findOptionConfig(displayOption.id());
         if (option == null) {
             option = firstOption();
@@ -306,75 +271,30 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         RadialMenuVisualResolver.ResolvedState pressedState = displayOption.enabled()
                 ? style.pressedState()
                 : style.disabledState();
-        int textureIndex = vectorMode ? optionIndex : resolveTextureIndex(texturePrefix, optionIndex);
+        int textureIndex = resolveTextureIndex(optionIndex);
+        String stateTexturePrefix = isFullWheelTextureSet(texturePrefix)
+                ? texturePrefix + "/Cropped"
+                : texturePrefix;
+        String defaultColor = displayOption.enabled() ? null : defaultState.fillColor();
+        String hoverColor = displayOption.enabled() ? null : hoverState.fillColor();
+        String pressedColor = displayOption.enabled() ? null : pressedState.fillColor();
 
-        String defaultTexture = vectorMode
-                ? texturePrefix + "/CommandWheelSlice" + textureIndex + "_Fill.png"
-                : texturePrefix + "/CommandWheelSlice" + textureIndex + "_Default.png";
-        String hoverTexture = vectorMode
-                ? defaultTexture
-                : texturePrefix + "/CommandWheelSlice" + textureIndex + "_Hover.png";
-        String pressedTexture = vectorMode
-                ? defaultTexture
-                : texturePrefix + "/CommandWheelSlice" + textureIndex + "_Pressed.png";
-        String defaultColor = vectorMode || !displayOption.enabled() ? defaultState.fillColor() : null;
-        String hoverColor = vectorMode || !displayOption.enabled() ? hoverState.fillColor() : null;
-        String pressedColor = vectorMode || !displayOption.enabled() ? pressedState.fillColor() : null;
-
-        if (!vectorMode && isFullWheelTextureSet(texturePrefix)) {
-            String croppedTexturePrefix = texturePrefix + "/Cropped";
-            defaultTexture = croppedTexturePrefix + "/CommandWheelSlice" + textureIndex + "_Default.png";
-            hoverTexture = croppedTexturePrefix + "/CommandWheelSlice" + textureIndex + "_Hover.png";
-            pressedTexture = croppedTexturePrefix + "/CommandWheelSlice" + textureIndex + "_Pressed.png";
-            commandBuilder.setObject(
-                    buttonSelector + ".Style.Default.Background",
-                    buildPatchStyle(defaultTexture, defaultColor)
-            );
-            commandBuilder.setObject(
-                    buttonSelector + ".Style.Hovered.Background",
-                    buildPatchStyle(hoverTexture, hoverColor)
-            );
-            commandBuilder.setObject(
-                    buttonSelector + ".Style.Pressed.Background",
-                    buildPatchStyle(pressedTexture, pressedColor)
-            );
-        } else {
-            commandBuilder.setObject(
-                    buttonSelector + ".Style.Default.Background",
-                    buildPatchStyle(defaultTexture, defaultColor)
-            );
-            commandBuilder.setObject(
-                    buttonSelector + ".Style.Hovered.Background",
-                    buildPatchStyle(hoverTexture, hoverColor)
-            );
-            commandBuilder.setObject(
-                    buttonSelector + ".Style.Pressed.Background",
-                    buildPatchStyle(pressedTexture, pressedColor)
-            );
-        }
-
-        if (vectorMode) {
-            commandBuilder.setObject(
-                    borderSelector + ".Background",
-                    buildPatchStyle(
-                            texturePrefix + "/CommandWheelSlice" + optionIndex + "_Border.png",
-                            defaultState.borderColor()
-                    )
-            );
-        }
+        commandBuilder.setObject(
+                buttonSelector + ".Style.Default.Background",
+                buildPatchStyle(stateTexturePrefix + "/CommandWheelSlice" + textureIndex + "_Default.png", defaultColor)
+        );
+        commandBuilder.setObject(
+                buttonSelector + ".Style.Hovered.Background",
+                buildPatchStyle(stateTexturePrefix + "/CommandWheelSlice" + textureIndex + "_Hover.png", hoverColor)
+        );
+        commandBuilder.setObject(
+                buttonSelector + ".Style.Pressed.Background",
+                buildPatchStyle(stateTexturePrefix + "/CommandWheelSlice" + textureIndex + "_Pressed.png", pressedColor)
+        );
 
         commandBuilder.set(labelSelector + ".Style.FontSize", style.labelFontSize());
         commandBuilder.set(labelSelector + ".Style.TextColor", defaultState.textColor());
         commandBuilder.set(labelSelector + ".Style.OutlineColor", defaultState.borderColor());
-    }
-
-    private void applyTransparentButtonBackground(@Nonnull UICommandBuilder commandBuilder,
-                                                  @Nonnull String buttonSelector) {
-        PatchStyle transparent = new PatchStyle();
-        transparent.setColor(Value.of("#00000000"));
-        commandBuilder.setObject(buttonSelector + ".Style.Default.Background", transparent);
-        commandBuilder.setObject(buttonSelector + ".Style.Hovered.Background", transparent);
-        commandBuilder.setObject(buttonSelector + ".Style.Pressed.Background", transparent);
     }
 
     private void applyGeometry(@Nonnull UICommandBuilder commandBuilder, @Nonnull RadialMenuConfig.Geometry geometry) {
@@ -389,7 +309,6 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         commandBuilder.setObject("#CommandWheelOuterRing.Anchor", outerRect.toAnchorObject());
         commandBuilder.setObject("#CommandWheelInnerRing.Anchor", innerRect.toAnchorObject());
         commandBuilder.setObject("#CommandWheelCenterPanel.Anchor", centerRect.toAnchorObject());
-        commandBuilder.setObject("#CommandWheelCenterBorder.Anchor", centerRect.toAnchorObject());
         commandBuilder.setObject("#RadialMenuCurrent.Anchor", centerTextRect(centerRect).toAnchorObject());
         for (int i = 0; i < MAX_OPTIONS; i++) {
             commandBuilder.setObject("#CommandVisual" + i + ".Anchor", outerRect.toAnchorObject());
@@ -398,37 +317,16 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
 
     private void applyButtonGeometry(@Nonnull UICommandBuilder commandBuilder,
                                      @Nonnull String buttonSelector,
-                                     @Nonnull String borderSelector,
                                      @Nonnull RadialMenuConfig.Geometry geometry,
                                      int optionIndex,
-                                     @Nonnull String texturePrefix,
-                                     boolean vectorMode,
-                                     int borderThicknessPx) {
+                                     @Nonnull String texturePrefix) {
         double scale = safePositive(geometry.getOuterDiameterPx(), RadialMenuConfig.Geometry.DEFAULT_OUTER_DIAMETER)
                 / (double) BASE_OUTER_DIAMETER;
         Rect base = BASE_BUTTON_RECTS[optionIndex];
-        if (!vectorMode) {
-            Rect hitRect;
-            if (isFullWheelTextureSet(texturePrefix)) {
-                hitRect = resolveFullWheelHitRect(texturePrefix, optionIndex, scale, base);
-            } else {
-                hitRect = resolveTextureModeRect(texturePrefix, optionIndex, scale, base);
-            }
-            commandBuilder.setObject(buttonSelector + ".Anchor", hitRect.toAnchorObject());
-            commandBuilder.setObject(borderSelector + ".Anchor", hitRect.toAnchorObject());
-            return;
-        }
-
-        Rect scaled = base.scaleAround(BASE_CENTER_X, BASE_CENTER_Y, scale);
-        if (vectorMode && borderThicknessPx > 0) {
-            int maxInset = Math.max(0, Math.min((scaled.width - 1) / 4, (scaled.height - 1) / 4));
-            int inset = Math.min(borderThicknessPx, maxInset);
-            if (inset > 0) {
-                scaled = scaled.inset(inset);
-            }
-        }
-        commandBuilder.setObject(buttonSelector + ".Anchor", scaled.toAnchorObject());
-        commandBuilder.setObject(borderSelector + ".Anchor", scaled.toAnchorObject());
+        Rect hitRect = isFullWheelTextureSet(texturePrefix)
+                ? resolveFullWheelHitRect(texturePrefix, optionIndex, scale, base)
+                : resolveTextureModeRect(texturePrefix, optionIndex, scale, base);
+        commandBuilder.setObject(buttonSelector + ".Anchor", hitRect.toAnchorObject());
     }
 
     @Nonnull
@@ -436,7 +334,7 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
                                          int optionIndex,
                                          double scale,
                                          @Nonnull Rect fallbackBaseRect) {
-        int textureIndex = resolveTextureIndex(texturePrefix, optionIndex);
+        int textureIndex = resolveTextureIndex(optionIndex);
         TextureMetrics metrics = resolveTextureMetrics(texturePrefix, textureIndex);
         if (metrics == null || !metrics.hasAlphaBounds()) {
             return fallbackBaseRect.scaleAround(BASE_CENTER_X, BASE_CENTER_Y, scale);
@@ -460,22 +358,14 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
                                         int optionIndex,
                                         double scale,
                                         @Nonnull Rect fallbackBaseRect) {
-        int textureIndex = resolveTextureIndex(texturePrefix, optionIndex);
+        int textureIndex = resolveTextureIndex(optionIndex);
         TextureMetrics metrics = resolveTextureMetrics(texturePrefix, textureIndex);
         if (metrics == null) {
             return fallbackBaseRect.scaleAround(BASE_CENTER_X, BASE_CENTER_Y, scale);
         }
         int width = Math.max(1, (int) Math.round(metrics.width() * scale));
         int height = Math.max(1, (int) Math.round(metrics.height() * scale));
-        Point textureCenter = resolveTextureAnchorCenter(texturePrefix, fallbackBaseRect, optionIndex, scale);
-        if (isLegacyTexturePrefix(texturePrefix)) {
-            return centeredRect(
-                    (int) Math.round(textureCenter.x()),
-                    (int) Math.round(textureCenter.y()),
-                    width,
-                    height
-            );
-        }
+        Point textureCenter = resolveTextureAnchorCenter(optionIndex, scale);
         return centeredRect(
                 (int) Math.round(textureCenter.x()),
                 (int) Math.round(textureCenter.y()),
@@ -485,27 +375,14 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
     }
 
     @Nonnull
-    private Point resolveTextureAnchorCenter(@Nonnull String texturePrefix,
-                                             @Nonnull Rect fallbackBaseRect,
-                                             int optionIndex,
+    private Point resolveTextureAnchorCenter(int optionIndex,
                                              double scale) {
-        int fallbackCenterX = fallbackBaseRect.centerX();
-        int fallbackCenterY = fallbackBaseRect.centerY();
-        if (isLegacyTexturePrefix(texturePrefix)) {
-            double scaledX = BASE_CENTER_X + (fallbackCenterX - BASE_CENTER_X) * scale;
-            double scaledY = BASE_CENTER_Y + (fallbackCenterY - BASE_CENTER_Y) * scale;
-            return new Point(scaledX, scaledY);
-        }
         double angleDegrees = -90.0 + optionIndex * 45.0 + CUSTOM_TEXTURE_LAYOUT_ANGLE_OFFSET_DEGREES;
         double radians = Math.toRadians(angleDegrees);
         double radius = CUSTOM_TEXTURE_SLOT_RADIUS * scale;
         double centerX = BASE_CENTER_X + (CUSTOM_TEXTURE_CENTER_OFFSET_X * scale) + Math.cos(radians) * radius;
         double centerY = BASE_CENTER_Y + (CUSTOM_TEXTURE_CENTER_OFFSET_Y * scale) + Math.sin(radians) * radius;
         return new Point(centerX, centerY);
-    }
-
-    private boolean isLegacyTexturePrefix(@Nonnull String texturePrefix) {
-        return RadialMenuVisualResolver.LEGACY_TEXTURE_PREFIX.equalsIgnoreCase(texturePrefix);
     }
 
     private boolean isFullWheelTextureSet(@Nonnull String texturePrefix) {
@@ -515,11 +392,8 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
                 && metrics.height() == BASE_OUTER_DIAMETER;
     }
 
-    private int resolveTextureIndex(@Nonnull String texturePrefix, int optionIndex) {
+    private int resolveTextureIndex(int optionIndex) {
         if (optionIndex < 0 || optionIndex >= MAX_OPTIONS) {
-            return optionIndex;
-        }
-        if (isLegacyTexturePrefix(texturePrefix)) {
             return optionIndex;
         }
         return NEW_TEXTURE_INDEX_BY_OPTION[optionIndex];
@@ -592,9 +466,7 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
     private void applyLabelGeometry(@Nonnull UICommandBuilder commandBuilder,
                                     @Nonnull String labelSelector,
                                     @Nonnull RadialMenuConfig.Geometry geometry,
-                                    int optionIndex,
-                                    @Nonnull String texturePrefix,
-                                    boolean vectorMode) {
+                                    int optionIndex) {
         double scale = safePositive(geometry.getOuterDiameterPx(), RadialMenuConfig.Geometry.DEFAULT_OUTER_DIAMETER)
                 / (double) BASE_OUTER_DIAMETER;
         Rect base = BASE_LABEL_RECTS[optionIndex];
@@ -602,9 +474,7 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         int height = Math.max(20, (int) Math.round(base.height * scale));
         int labelRadius = safePositive(geometry.getLabelRadiusPx(), RadialMenuConfig.Geometry.DEFAULT_LABEL_RADIUS);
         double angleDegrees = -90 + optionIndex * 45.0;
-        if (!vectorMode && !isLegacyTexturePrefix(texturePrefix)) {
-            angleDegrees += TEXTURE_LABEL_ANGLE_OFFSET_DEGREES;
-        }
+        angleDegrees += TEXTURE_LABEL_ANGLE_OFFSET_DEGREES;
         double radians = Math.toRadians(angleDegrees);
         int centerX = (int) Math.round(BASE_CENTER_X + Math.cos(radians) * labelRadius);
         int centerY = (int) Math.round(BASE_CENTER_Y + Math.sin(radians) * labelRadius);
@@ -637,18 +507,6 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
 
     @Nonnull
     private String resolveTexturePrefix(@Nonnull RadialMenuConfig menu) {
-        if (menu.getVisual().getRenderMode() == RenderMode.Vector) {
-            if (isVectorTexturePrefixComplete(VECTOR_TEXTURE_PREFIX)) {
-                return VECTOR_TEXTURE_PREFIX;
-            }
-            if (logger != null) {
-                logger.at(Level.WARNING).log(
-                        "RadialMenu: Vector texture set '" + VECTOR_TEXTURE_PREFIX + "' is incomplete. Falling back to '"
-                                + RadialMenuVisualResolver.LEGACY_TEXTURE_PREFIX + "'."
-                );
-            }
-            return RadialMenuVisualResolver.LEGACY_TEXTURE_PREFIX;
-        }
         return RadialMenuVisualResolver.resolveTexturePrefix(
                 menu,
                 this::isTexturePrefixComplete,
@@ -660,26 +518,21 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         );
     }
 
-    private boolean isVectorTexturePrefixComplete(@Nonnull String prefix) {
-        if (!resourceExists(prefix + "/CommandWheelCenterPanel_Fill.png")) {
+    private boolean isTexturePrefixComplete(@Nonnull String prefix) {
+        if (!RadialMenuVisualResolver.textureSetLooksComplete(prefix, this::resourceExists)) {
             return false;
         }
-        if (!resourceExists(prefix + "/CommandWheelCenterPanel_Border.png")) {
-            return false;
+        if (!isFullWheelTextureSet(prefix)) {
+            return true;
         }
         for (int i = 0; i < MAX_OPTIONS; i++) {
-            if (!resourceExists(prefix + "/CommandWheelSlice" + i + "_Fill.png")) {
-                return false;
-            }
-            if (!resourceExists(prefix + "/CommandWheelSlice" + i + "_Border.png")) {
-                return false;
+            for (String state : TEXTURE_STATES) {
+                if (!resourceExists(prefix + "/Cropped/CommandWheelSlice" + i + "_" + state + ".png")) {
+                    return false;
+                }
             }
         }
         return true;
-    }
-
-    private boolean isTexturePrefixComplete(@Nonnull String prefix) {
-        return RadialMenuVisualResolver.textureSetLooksComplete(prefix, this::resourceExists);
     }
 
     private boolean resourceExists(@Nonnull String texturePath) {
@@ -838,14 +691,6 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
 
         private int centerY() {
             return top + (height / 2);
-        }
-
-        @Nonnull
-        private Rect inset(int amount) {
-            int safe = Math.max(0, amount);
-            int newWidth = Math.max(1, width - safe * 2);
-            int newHeight = Math.max(1, height - safe * 2);
-            return centeredRect(centerX(), centerY(), newWidth, newHeight);
         }
 
         @Nonnull

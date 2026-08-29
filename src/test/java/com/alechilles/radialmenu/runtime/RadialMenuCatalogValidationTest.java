@@ -163,7 +163,7 @@ class RadialMenuCatalogValidationTest {
         TestConfigFactory.setVisual(
                 config,
                 TestConfigFactory.visual(
-                        RenderMode.Vector,
+                        RenderMode.Texture,
                         100,
                         120,
                         10,

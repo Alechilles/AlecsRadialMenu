@@ -14,7 +14,7 @@ Use the [Alec's Radial Menu wiki](https://wiki.hytalemodding.dev/mod/alecs-radia
 - Execute player commands, invoke actions registered by another mod, or run native Hytale `RootInteraction` assets.
 - Open a target-aware menu from an NPC interaction and change that NPC through states, named results, or registered actions.
 - Choose whether a slice runs immediately or becomes the item's armed primary action.
-- Customize wheel geometry, labels, state colors, and texture sets, with per-option font and color overrides.
+- Customize wheel geometry, labels, texture sets, and per-option font size. Custom color rendering is disabled until Noesis UI is available.
 - Retain each player's selection independently for every menu until they disconnect.
 
 ## Native Interaction Wheels
@@ -94,17 +94,15 @@ The complete example item is at `Server/Item/Items/Commands/Alec_Radial_Menu_Exa
 - `Visual` (optional, defaults to the built-in texture wheel)
 
 ### `Visual` Fields
-- `RenderMode`: `Texture` (default) or `Vector` (legacy/experimental)
+- `RenderMode`: `Texture`; old `Vector` values fall back to `Texture`
 - `Geometry`:
   - `OuterDiameterPx`
   - `InnerDiameterPx`
   - `LabelRadiusPx`
   - `CenterDiameterPx`
-- `BorderThicknessPx`
+- `BorderThicknessPx` (reserved for future Noesis UI support)
 - `Label.FontSize`
-- `States`:
-  - `Default`, `Hover`, `Pressed`, `Selected`, `Disabled`
-  - each state supports `FillColor`, `TextColor`, `BorderColor`
+- `States` (reserved for future Noesis UI color support)
 - `TextureSet`:
   - `Prefix` (optional custom texture set path using the same naming convention)
   - omitted `Prefix` uses the built-in `RadialMenu/Default` texture wheel
@@ -153,7 +151,7 @@ Example:
 
 ### `VisualOverride` Fields (Option)
 - `LabelFontSize` (optional)
-- `States` (optional partial state/color overrides)
+- `States` (reserved for future Noesis UI color support)
 
 ## Interaction Usage
 
@@ -261,8 +259,8 @@ Use `scripts/generate_rotated_radial_slices.py` to generate all 8 textured slice
 python scripts/generate_rotated_radial_slices.py `
   --input "C:\Users\22ale\Downloads\Ellipse.png" `
   --output-dir "target/radial-textures/EllipseTest" `
-  --copy-core-from "src/main/resources/Common/UI/Custom/RadialMenu" `
-  --mask-from "src/main/resources/Common/UI/Custom/RadialMenu"
+  --copy-core-from "src/main/resources/Common/UI/Custom/RadialMenu/Default" `
+  --mask-from "src/main/resources/Common/UI/Custom/RadialMenu/Default"
 ```
 
 Notes:
@@ -278,8 +276,8 @@ python scripts/generate_rotated_radial_slices.py `
   --segments-dir "C:\Users\22ale\Downloads\Untitled" `
   --segment-pattern "Segment {n}.png" `
   --output-dir "target/radial-textures/SegmentTest" `
-  --copy-core-from "src/main/resources/Common/UI/Custom/RadialMenu" `
-  --mask-from "src/main/resources/Common/UI/Custom/RadialMenu"
+  --copy-core-from "src/main/resources/Common/UI/Custom/RadialMenu/Default" `
+  --mask-from "src/main/resources/Common/UI/Custom/RadialMenu/Default"
 ```
 
 Notes:

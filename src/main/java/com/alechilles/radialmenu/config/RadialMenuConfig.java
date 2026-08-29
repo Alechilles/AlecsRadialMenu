@@ -248,7 +248,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (visual, value) -> visual.renderMode = RenderMode.fromString(value),
                     visual -> visual.getRenderMode().name()
             )
-            .documentation("Wheel rendering method: Texture or Vector. Default: Texture.")
+            .documentation("Wheel rendering method. Only Texture is currently supported.")
             .add()
             .<Geometry>append(
                     new KeyedCodec<>("Geometry", GEOMETRY_CODEC),
@@ -262,7 +262,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (visual, value) -> visual.borderThicknessPx = value == null ? Visual.DEFAULT_BORDER_THICKNESS : value,
                     visual -> visual.borderThicknessPx
             )
-            .documentation("Radial slice border thickness in pixels. Default: 2.")
+            .documentation("Reserved for future Noesis UI border rendering.")
             .add()
             .<LabelVisual>append(
                     new KeyedCodec<>("Label", LABEL_VISUAL_CODEC),
@@ -276,7 +276,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (visual, value) -> visual.states = value == null ? StatePalette.defaults() : value,
                     visual -> visual.getStates()
             )
-            .documentation("Default color palette for each option visual state.")
+            .documentation("Reserved for future Noesis UI color rendering. The current texture UI uses built-in colors.")
             .add()
             .<TextureSet>append(
                     new KeyedCodec<>("TextureSet", TEXTURE_SET_CODEC),
@@ -303,7 +303,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (override, value) -> override.states = value,
                     override -> override.states
             )
-            .documentation("Optional partial color overrides for this option. Missing colors use the menu palette.")
+            .documentation("Reserved for future Noesis UI color rendering.")
             .add()
             .build();
 
@@ -522,7 +522,7 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
                     (asset, value) -> asset.visual = value == null ? Visual.defaults() : value,
                     asset -> asset.getVisual()
             )
-            .documentation("Wheel geometry, labels, colors, and texture resources.")
+            .documentation("Wheel geometry, labels, and texture resources. Custom color rendering is reserved for Noesis UI.")
             .add()
             .build();
 
@@ -815,19 +815,12 @@ public final class RadialMenuConfig implements JsonAssetWithMap<String, DefaultA
     }
 
     public enum RenderMode {
+        @Deprecated(forRemoval = false)
         Vector,
         Texture;
 
         @Nonnull
         public static RenderMode fromString(@Nullable String value) {
-            if (value == null || value.isBlank()) {
-                return Texture;
-            }
-            for (RenderMode mode : values()) {
-                if (mode.name().equalsIgnoreCase(value.trim())) {
-                    return mode;
-                }
-            }
             return Texture;
         }
     }

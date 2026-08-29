@@ -20,7 +20,7 @@ Place menu assets under `Server/RadialMenu/Menus`. The asset key comes from the 
 | `ExecutionMode` | No | `SelectAndArm` or `SelectAndRun`. Default: `SelectAndArm`. |
 | `DefaultOptionId` | No | Option selected when the menu opens. The first valid option is used if this field is absent. |
 | `Options` | Yes | Ordered list of one to eight options. |
-| `Visual` | No | Menu geometry, labels, colors, and texture settings. |
+| `Visual` | No | Menu geometry, labels, and texture settings. |
 
 A menu is skipped if its configuration is invalid. Option IDs are case-insensitive during lookup and must be unique.
 
@@ -33,7 +33,7 @@ A menu is skipped if its configuration is invalid. Option IDs are case-insensiti
 | `Label` | No | Literal text. It takes priority over `LabelKey`. |
 | `LabelKey` | No | Language key used when `Label` is blank. |
 | `Feedback` | No | Text sent after successful execution. |
-| `VisualOverride` | No | Per-option font and partial color overrides. |
+| `VisualOverride` | No | Per-option font-size override. Color fields are reserved for future Noesis UI support. |
 
 If both label fields are blank, the runtime uses the option ID as the displayed label.
 

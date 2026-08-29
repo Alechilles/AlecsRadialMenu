@@ -16,7 +16,7 @@ import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
 
 class RadialMenuVisualResolverTest {
     @Test
-    void optionOverrideColorsAndFontBeatMenuDefaults() {
+    void optionOverrideKeepsFontButUsesBuiltInColors() {
         Option option = TestConfigFactory.commandOption("config", "Config", "/tw config");
         TestConfigFactory.setOptionVisualOverride(
                 option,
@@ -42,14 +42,14 @@ class RadialMenuVisualResolverTest {
 
         RadialMenuVisualResolver.ResolvedOptionVisual resolved = RadialMenuVisualResolver.resolveOptionVisual(config, option, false);
         assertEquals(22, resolved.labelFontSize());
-        assertEquals("#112233", resolved.defaultState().fillColor());
-        assertEquals("#445566", resolved.defaultState().textColor());
-        assertEquals("#778899", resolved.defaultState().borderColor());
+        assertEquals("#3b5263", resolved.defaultState().fillColor());
+        assertEquals("#d6e0ec", resolved.defaultState().textColor());
+        assertEquals("#1b2730", resolved.defaultState().borderColor());
 
         RadialMenuVisualResolver.ResolvedOptionVisual selected = RadialMenuVisualResolver.resolveOptionVisual(config, option, true);
-        assertEquals("#224466", selected.defaultState().fillColor());
+        assertEquals("#5d829f", selected.defaultState().fillColor());
         assertEquals("#ffffff", selected.defaultState().textColor());
-        assertEquals("#113355", selected.defaultState().borderColor());
+        assertEquals("#30495b", selected.defaultState().borderColor());
     }
 
     @Test

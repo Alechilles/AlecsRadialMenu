@@ -85,6 +85,11 @@ class RadialMenuConfigTest {
     }
 
     @Test
+    void experimentalVectorModeFallsBackToTexture() {
+        assertEquals(RenderMode.Texture, RenderMode.fromString("Vector"));
+    }
+
+    @Test
     void runInteractionOptionDefaultsToPrimaryAndExposesRootAsset() {
         RunInteractionOption defaultType = TestConfigFactory.interactionOption(
                 "swing",

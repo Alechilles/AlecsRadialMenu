@@ -14,15 +14,12 @@ import javax.annotation.Nullable;
 import com.alechilles.radialmenu.config.RadialMenuConfig;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
 import com.alechilles.radialmenu.config.RadialMenuConfig.OptionVisualOverride;
-import com.alechilles.radialmenu.config.RadialMenuConfig.RenderMode;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StateColors;
 import com.alechilles.radialmenu.config.RadialMenuConfig.StatePalette;
 import com.alechilles.radialmenu.config.RadialMenuConfig.TextureSet;
 
 public final class RadialMenuVisualResolver {
     public static final String DEFAULT_TEXTURE_PREFIX = "RadialMenu/Default";
-    public static final String LEGACY_TEXTURE_PREFIX = "RadialMenu";
-
     private static final String[] SLICE_STATES = new String[] {"Default", "Hover", "Pressed"};
 
     private RadialMenuVisualResolver() {
@@ -36,29 +33,28 @@ public final class RadialMenuVisualResolver {
         Objects.requireNonNull(option, "option");
 
         RadialMenuConfig.Visual visual = config.getVisual();
-        StatePalette basePalette = visual.getStates();
+        StatePalette basePalette = StatePalette.defaults();
         OptionVisualOverride override = option.getVisualOverride();
-        StatePalette overridePalette = override == null ? null : override.getStates();
 
         ResolvedState defaultState = resolveState(
                 basePalette.getDefaultState(),
-                overridePalette == null ? null : overridePalette.getDefaultStateRaw()
+                null
         );
         ResolvedState hoverState = resolveState(
                 basePalette.getHoverState(),
-                overridePalette == null ? null : overridePalette.getHoverStateRaw()
+                null
         );
         ResolvedState pressedState = resolveState(
                 basePalette.getPressedState(),
-                overridePalette == null ? null : overridePalette.getPressedStateRaw()
+                null
         );
         ResolvedState selectedState = resolveState(
                 basePalette.getSelectedState(),
-                overridePalette == null ? null : overridePalette.getSelectedStateRaw()
+                null
         );
         ResolvedState disabledState = resolveState(
                 basePalette.getDisabledState(),
-                overridePalette == null ? null : overridePalette.getDisabledStateRaw()
+                null
         );
 
         int labelFontSize = visual.getLabel().getFontSize();
@@ -81,11 +77,6 @@ public final class RadialMenuVisualResolver {
                                               @Nullable Predicate<String> prefixCompletenessCheck,
                                               @Nullable Consumer<String> warningSink) {
         Objects.requireNonNull(config, "config");
-
-        RenderMode mode = config.getVisual().getRenderMode();
-        if (mode != RenderMode.Texture) {
-            return LEGACY_TEXTURE_PREFIX;
-        }
 
         TextureSet textureSet = config.getVisual().getTextureSet();
         String prefix = normalizePrefix(textureSet.getPrefix());
