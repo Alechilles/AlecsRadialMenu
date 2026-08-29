@@ -20,7 +20,6 @@ import com.alechilles.radialmenu.config.RadialMenuConfig.TextureSet;
 
 public final class RadialMenuVisualResolver {
     public static final String DEFAULT_TEXTURE_PREFIX = "RadialMenu/Default";
-    private static final String BUILT_IN_BASE_COLOR = "#b0b0b0";
     private static final String[] SLICE_STATES = new String[] {"Default", "Hover", "Pressed"};
 
     private RadialMenuVisualResolver() {
@@ -125,11 +124,11 @@ public final class RadialMenuVisualResolver {
         if (DEFAULT_TEXTURE_PREFIX.equals(texturePrefix)) {
             return new ResolvedButtonTextures(
                     defaultTexture,
+                    slicePrefix + "/CommandWheelSlice" + textureIndex + "_Hover.png",
                     defaultTexture,
-                    defaultTexture,
-                    BUILT_IN_BASE_COLOR,
                     null,
-                    BUILT_IN_BASE_COLOR
+                    null,
+                    null
             );
         }
         return new ResolvedButtonTextures(

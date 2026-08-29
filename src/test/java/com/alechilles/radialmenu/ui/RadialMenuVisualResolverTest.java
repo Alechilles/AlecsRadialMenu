@@ -150,7 +150,7 @@ class RadialMenuVisualResolverTest {
     }
 
     @Test
-    void builtInTextureReusesDefaultSliceWithRuntimeStateColors() {
+    void builtInTextureUsesSeparateHoverAndReusesDefaultForPressed() {
         RadialMenuVisualResolver.ResolvedButtonTextures textures =
                 RadialMenuVisualResolver.resolveButtonTextures(
                         RadialMenuVisualResolver.DEFAULT_TEXTURE_PREFIX,
@@ -159,11 +159,11 @@ class RadialMenuVisualResolverTest {
                 );
 
         assertEquals("RadialMenu/Default/CommandWheelSlice3_Default.png", textures.defaultTexture());
-        assertEquals(textures.defaultTexture(), textures.hoverTexture());
+        assertEquals("RadialMenu/Default/CommandWheelSlice3_Hover.png", textures.hoverTexture());
         assertEquals(textures.defaultTexture(), textures.pressedTexture());
-        assertEquals("#b0b0b0", textures.defaultColor());
+        assertNull(textures.defaultColor());
         assertNull(textures.hoverColor());
-        assertEquals("#b0b0b0", textures.pressedColor());
+        assertNull(textures.pressedColor());
     }
 
     @Test

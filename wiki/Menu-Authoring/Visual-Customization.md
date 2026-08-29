@@ -25,7 +25,7 @@ The inner diameter must be smaller than the outer diameter. The center diameter 
 
 ## Color support
 
-The built-in wheel ships eight default slice textures and one center texture. It reuses each slice for all button states. Normal and pressed slices use a fixed neutral runtime tint. Hover removes that tint and shows the brighter original texture.
+The built-in wheel ships eight normal slice textures, eight brighter hover textures, and one center texture. Pressed reuses the normal slice texture.
 
 Configured `States`, per-option color overrides, and `BorderThicknessPx` remain reserved for future Noesis UI support. They do not recolor the current wheel.
 
