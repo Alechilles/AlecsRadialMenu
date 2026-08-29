@@ -16,6 +16,7 @@ import javax.imageio.ImageIO;
 import com.alechilles.radialmenu.config.RadialMenuConfig;
 import com.alechilles.radialmenu.config.RadialMenuConfig.Option;
 import com.alechilles.radialmenu.localization.RadialMenuLocalizedText;
+import com.alechilles.radialmenu.ui.RadialMenuVisualResolver.ResolvedButtonTextures;
 import com.alechilles.radialmenu.ui.RadialMenuVisualResolver.ResolvedOptionVisual;
 import com.hypixel.hytale.codec.Codec;
 import com.hypixel.hytale.codec.KeyedCodec;
@@ -67,6 +68,17 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
             new Rect(486, 187, 207, 207),
             new Rect(312, 161, 142, 217),
             new Rect(147, 187, 207, 207)
+    };
+
+    private static final Rect[] BUILT_IN_BUTTON_RECTS = new Rect[] {
+            new Rect(100, 461, 224, 207),
+            new Rect(195, 573, 207, 224),
+            new Rect(421, 573, 207, 224),
+            new Rect(533, 461, 224, 207),
+            new Rect(533, 235, 224, 207),
+            new Rect(421, 140, 207, 224),
+            new Rect(195, 140, 207, 224),
+            new Rect(100, 235, 224, 207)
     };
 
     private static final Rect[] BASE_LABEL_RECTS = new Rect[] {
@@ -141,24 +153,19 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
 
         RadialMenuConfig.Visual visual = config.getVisual();
         String texturePrefix = resolveTexturePrefix(config);
-        boolean fullWheelTextureMode = isFullWheelTextureSet(texturePrefix);
-
         applyGeometry(commandBuilder, visual.getGeometry());
-        applyRingVisuals(commandBuilder, texturePrefix);
+        applyCenterVisual(commandBuilder, texturePrefix);
 
         for (int i = 0; i < MAX_OPTIONS; i++) {
             String buttonSelector = "#CommandButton" + i;
-            String visualSelector = "#CommandVisual" + i;
             String labelSelector = "#CommandLabel" + i;
             if (i >= options.length) {
-                commandBuilder.set(visualSelector + ".Visible", false);
                 commandBuilder.set(buttonSelector + ".Visible", false);
                 commandBuilder.set(labelSelector + ".Visible", false);
                 continue;
             }
 
             DisplayOption option = options[i];
-            commandBuilder.set(visualSelector + ".Visible", !fullWheelTextureMode);
             commandBuilder.set(buttonSelector + ".Visible", true);
             commandBuilder.set(buttonSelector + ".Text", "");
             commandBuilder.set(labelSelector + ".Visible", true);
@@ -174,7 +181,6 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
             );
             applyButtonVisuals(
                     commandBuilder,
-                    visualSelector,
                     buttonSelector,
                     labelSelector,
                     texturePrefix,
@@ -231,11 +237,8 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         handled = true;
     }
 
-    private void applyRingVisuals(@Nonnull UICommandBuilder commandBuilder,
-                                  @Nonnull String texturePrefix) {
-        // Legacy outer/inner wheel rings are intentionally disabled for the standalone radial menu.
-        commandBuilder.set("#CommandWheelOuterRing.Visible", false);
-        commandBuilder.set("#CommandWheelInnerRing.Visible", false);
+    private void applyCenterVisual(@Nonnull UICommandBuilder commandBuilder,
+                                   @Nonnull String texturePrefix) {
         commandBuilder.set("#CommandWheelCenterPanel.Visible", true);
         commandBuilder.setObject(
                 "#CommandWheelCenterPanel.Background",
@@ -244,7 +247,6 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
     }
 
     private void applyButtonVisuals(@Nonnull UICommandBuilder commandBuilder,
-                                    @Nonnull String visualSelector,
                                     @Nonnull String buttonSelector,
                                     @Nonnull String labelSelector,
                                     @Nonnull String texturePrefix,
@@ -272,24 +274,26 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
                 ? style.pressedState()
                 : style.disabledState();
         int textureIndex = resolveTextureIndex(optionIndex);
-        String stateTexturePrefix = isFullWheelTextureSet(texturePrefix)
-                ? texturePrefix + "/Cropped"
-                : texturePrefix;
-        String defaultColor = displayOption.enabled() ? null : defaultState.fillColor();
-        String hoverColor = displayOption.enabled() ? null : hoverState.fillColor();
-        String pressedColor = displayOption.enabled() ? null : pressedState.fillColor();
+        ResolvedButtonTextures textures = RadialMenuVisualResolver.resolveButtonTextures(
+                texturePrefix,
+                isFullWheelTextureSet(texturePrefix),
+                textureIndex
+        );
+        String defaultColor = displayOption.enabled() ? textures.defaultColor() : defaultState.fillColor();
+        String hoverColor = displayOption.enabled() ? textures.hoverColor() : hoverState.fillColor();
+        String pressedColor = displayOption.enabled() ? textures.pressedColor() : pressedState.fillColor();
 
         commandBuilder.setObject(
                 buttonSelector + ".Style.Default.Background",
-                buildPatchStyle(stateTexturePrefix + "/CommandWheelSlice" + textureIndex + "_Default.png", defaultColor)
+                buildPatchStyle(textures.defaultTexture(), defaultColor)
         );
         commandBuilder.setObject(
                 buttonSelector + ".Style.Hovered.Background",
-                buildPatchStyle(stateTexturePrefix + "/CommandWheelSlice" + textureIndex + "_Hover.png", hoverColor)
+                buildPatchStyle(textures.hoverTexture(), hoverColor)
         );
         commandBuilder.setObject(
                 buttonSelector + ".Style.Pressed.Background",
-                buildPatchStyle(stateTexturePrefix + "/CommandWheelSlice" + textureIndex + "_Pressed.png", pressedColor)
+                buildPatchStyle(textures.pressedTexture(), pressedColor)
         );
 
         commandBuilder.set(labelSelector + ".Style.FontSize", style.labelFontSize());
@@ -298,21 +302,12 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
     }
 
     private void applyGeometry(@Nonnull UICommandBuilder commandBuilder, @Nonnull RadialMenuConfig.Geometry geometry) {
-        int outerDiameter = safePositive(geometry.getOuterDiameterPx(), RadialMenuConfig.Geometry.DEFAULT_OUTER_DIAMETER);
-        int innerDiameter = safePositive(geometry.getInnerDiameterPx(), RadialMenuConfig.Geometry.DEFAULT_INNER_DIAMETER);
         int centerDiameter = safePositive(geometry.getCenterDiameterPx(), RadialMenuConfig.Geometry.DEFAULT_CENTER_DIAMETER);
 
-        Rect outerRect = centeredRect(BASE_CENTER_X, BASE_CENTER_Y, outerDiameter, outerDiameter);
-        Rect innerRect = centeredRect(BASE_CENTER_X, BASE_CENTER_Y, innerDiameter, innerDiameter);
         Rect centerRect = centeredRect(BASE_CENTER_X, BASE_CENTER_Y, centerDiameter, centerDiameter);
 
-        commandBuilder.setObject("#CommandWheelOuterRing.Anchor", outerRect.toAnchorObject());
-        commandBuilder.setObject("#CommandWheelInnerRing.Anchor", innerRect.toAnchorObject());
         commandBuilder.setObject("#CommandWheelCenterPanel.Anchor", centerRect.toAnchorObject());
         commandBuilder.setObject("#RadialMenuCurrent.Anchor", centerTextRect(centerRect).toAnchorObject());
-        for (int i = 0; i < MAX_OPTIONS; i++) {
-            commandBuilder.setObject("#CommandVisual" + i + ".Anchor", outerRect.toAnchorObject());
-        }
     }
 
     private void applyButtonGeometry(@Nonnull UICommandBuilder commandBuilder,
@@ -323,7 +318,9 @@ public final class RadialMenuPage extends InteractiveCustomUIPage<RadialMenuPage
         double scale = safePositive(geometry.getOuterDiameterPx(), RadialMenuConfig.Geometry.DEFAULT_OUTER_DIAMETER)
                 / (double) BASE_OUTER_DIAMETER;
         Rect base = BASE_BUTTON_RECTS[optionIndex];
-        Rect hitRect = isFullWheelTextureSet(texturePrefix)
+        Rect hitRect = RadialMenuVisualResolver.DEFAULT_TEXTURE_PREFIX.equals(texturePrefix)
+                ? BUILT_IN_BUTTON_RECTS[optionIndex].scaleAround(BASE_CENTER_X, BASE_CENTER_Y, scale)
+                : isFullWheelTextureSet(texturePrefix)
                 ? resolveFullWheelHitRect(texturePrefix, optionIndex, scale, base)
                 : resolveTextureModeRect(texturePrefix, optionIndex, scale, base);
         commandBuilder.setObject(buttonSelector + ".Anchor", hitRect.toAnchorObject());

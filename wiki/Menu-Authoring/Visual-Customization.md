@@ -25,7 +25,9 @@ The inner diameter must be smaller than the outer diameter. The center diameter 
 
 ## Color support
 
-The current texture UI uses the colors baked into each PNG file. `States`, per-option color overrides, and `BorderThicknessPx` are reserved for future Noesis UI support and do not recolor the current wheel.
+The built-in wheel ships eight default slice textures and one center texture. It reuses each slice for hover and pressed states and supplies a fixed runtime color for hover. This is an experiment in the current Hytale UI. The pressed state uses the unchanged default slice.
+
+Configured `States`, per-option color overrides, and `BorderThicknessPx` remain reserved for future Noesis UI support. They do not recolor the current wheel.
 
 ## Per-option overrides
 
@@ -52,7 +54,7 @@ Set a custom texture folder with:
 }
 ```
 
-The folder must contain the complete slice set with the expected file names. If the set is incomplete, the runtime logs a warning and uses `RadialMenu/Default`.
+The folder must contain `CommandWheelCenterPanel.png` and `CommandWheelSlice0..7_{Default,Hover,Pressed}.png`. If the set is incomplete, the runtime logs a warning and uses `RadialMenu/Default`. Ring textures are not used.
 
 Full-wheel textures that use a 640 by 640 canvas must also include `Cropped/CommandWheelSlice0..7_{Default,Hover,Pressed}.png`. These cropped files provide the visible button states and hit areas. Smaller slice textures do not need the `Cropped` folder.
 

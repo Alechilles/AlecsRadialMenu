@@ -2,6 +2,7 @@ package com.alechilles.radialmenu.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -106,6 +107,62 @@ class RadialMenuVisualResolverTest {
         );
 
         assertEquals(RadialMenuVisualResolver.DEFAULT_TEXTURE_PREFIX, prefix);
+    }
+
+    @Test
+    void explicitBuiltInTexturePrefixSkipsCustomCompletenessCheck() {
+        RadialMenuConfig config = TestConfigFactory.menu(
+                "menus/example/explicit-default-texture",
+                ExecutionMode.SelectAndArm,
+                null,
+                new String[0],
+                TestConfigFactory.commandOption("config", "Config", "/tw config")
+        );
+        TestConfigFactory.setVisual(
+                config,
+                TestConfigFactory.visual(
+                        RenderMode.Texture,
+                        640,
+                        300,
+                        234,
+                        300,
+                        2,
+                        15,
+                        config.getVisual().getStates(),
+                        RadialMenuVisualResolver.DEFAULT_TEXTURE_PREFIX
+                )
+        );
+        AtomicBoolean checked = new AtomicBoolean(false);
+        AtomicBoolean warned = new AtomicBoolean(false);
+
+        String prefix = RadialMenuVisualResolver.resolveTexturePrefix(
+                config,
+                ignored -> {
+                    checked.set(true);
+                    return false;
+                },
+                ignored -> warned.set(true)
+        );
+
+        assertFalse(checked.get());
+        assertFalse(warned.get());
+        assertEquals(RadialMenuVisualResolver.DEFAULT_TEXTURE_PREFIX, prefix);
+    }
+
+    @Test
+    void builtInTextureReusesDefaultSliceWithRuntimeStateColors() {
+        RadialMenuVisualResolver.ResolvedButtonTextures textures =
+                RadialMenuVisualResolver.resolveButtonTextures(
+                        RadialMenuVisualResolver.DEFAULT_TEXTURE_PREFIX,
+                        false,
+                        3
+                );
+
+        assertEquals("RadialMenu/Default/CommandWheelSlice3_Default.png", textures.defaultTexture());
+        assertEquals(textures.defaultTexture(), textures.hoverTexture());
+        assertEquals(textures.defaultTexture(), textures.pressedTexture());
+        assertEquals("#b9dcff", textures.hoverColor());
+        assertNull(textures.pressedColor());
     }
 
     @Test

@@ -7,8 +7,8 @@ Generate CommandWheelSlice textures either by:
 Outputs files named:
   CommandWheelSlice{0..7}_{Default|Hover|Pressed}.png
 
-Optionally copies required texture-mode core files:
-  CommandWheelCenterPanel.png, CommandWheelRingInner.png, CommandWheelRingOuter.png
+Optionally copies the required center texture:
+  CommandWheelCenterPanel.png
 """
 
 from __future__ import annotations
@@ -44,8 +44,6 @@ NEW_LAYOUT_TARGET_SIZES = [
 
 CORE_TEXTURE_FILES = (
     "CommandWheelCenterPanel.png",
-    "CommandWheelRingInner.png",
-    "CommandWheelRingOuter.png",
 )
 
 
@@ -97,7 +95,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--copy-core-from",
-        help="Optional directory to copy center/ring textures from (for texture-set completeness).",
+        help="Optional directory to copy the center texture from (for texture-set completeness).",
     )
     parser.add_argument(
         "--mask-from",

@@ -1,8 +1,9 @@
 # Changelog
 
 ## Unreleased
-- Removed 72 unused legacy and experimental UI textures. The mod now ships only the default wheel texture set.
+- Removed 114 unused legacy, experimental, duplicate-state, and full-wheel UI textures. The built-in wheel now ships eight slice textures and one center texture.
 - Disabled vector and custom color rendering until Noesis UI is available. Old `Vector` values fall back to the default texture mode, and custom texture folders remain supported.
+- Reused each built-in slice for default, hover, and pressed states. Hover now supplies a fixed runtime patch color as a Hytale UI tint experiment.
 
 ## 2.0.2
 - Confirmed stable Hytale `0.6.0` support with the declared server range `>=0.5.0 <0.7.0`.

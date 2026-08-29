@@ -6,4 +6,5 @@ build/
 .settings/
 .tmp/
 /.asset-tools/
+__pycache__/
 *.iml

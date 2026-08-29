@@ -66,66 +66,6 @@ $C.@PageOverlay {
       );
     }
 
-    Group #CommandWheelOuterRing {
-      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
-      Background: (TexturePath: "RadialMenu/Default/CommandWheelRingOuter.png");
-      Visible: false;
-    }
-
-    Group #CommandWheelInnerRing {
-      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
-      Background: (TexturePath: "RadialMenu/Default/CommandWheelRingInner.png");
-      Visible: false;
-    }
-
-    Group #CommandVisual0 {
-      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
-      Background: (TexturePath: "RadialMenu/Default/CommandWheelSlice0_Default.png");
-      Visible: false;
-    }
-
-    Group #CommandVisual1 {
-      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
-      Background: (TexturePath: "RadialMenu/Default/CommandWheelSlice1_Default.png");
-      Visible: false;
-    }
-
-    Group #CommandVisual2 {
-      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
-      Background: (TexturePath: "RadialMenu/Default/CommandWheelSlice2_Default.png");
-      Visible: false;
-    }
-
-    Group #CommandVisual3 {
-      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
-      Background: (TexturePath: "RadialMenu/Default/CommandWheelSlice3_Default.png");
-      Visible: false;
-    }
-
-    Group #CommandVisual4 {
-      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
-      Background: (TexturePath: "RadialMenu/Default/CommandWheelSlice4_Default.png");
-      Visible: false;
-    }
-
-    Group #CommandVisual5 {
-      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
-      Background: (TexturePath: "RadialMenu/Default/CommandWheelSlice5_Default.png");
-      Visible: false;
-    }
-
-    Group #CommandVisual6 {
-      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
-      Background: (TexturePath: "RadialMenu/Default/CommandWheelSlice6_Default.png");
-      Visible: false;
-    }
-
-    Group #CommandVisual7 {
-      Anchor: (Top: 100, Left: 140, Width: 640, Height: 640);
-      Background: (TexturePath: "RadialMenu/Default/CommandWheelSlice7_Default.png");
-      Visible: false;
-    }
-
     Group #CommandWheelCenterPanel {
       Anchor: (Top: 270, Left: 310, Width: 300, Height: 300);
       Background: (TexturePath: "RadialMenu/Default/CommandWheelCenterPanel.png");

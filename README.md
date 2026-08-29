@@ -14,7 +14,7 @@ Use the [Alec's Radial Menu wiki](https://wiki.hytalemodding.dev/mod/alecs-radia
 - Execute player commands, invoke actions registered by another mod, or run native Hytale `RootInteraction` assets.
 - Open a target-aware menu from an NPC interaction and change that NPC through states, named results, or registered actions.
 - Choose whether a slice runs immediately or becomes the item's armed primary action.
-- Customize wheel geometry, labels, texture sets, and per-option font size. Custom color rendering is disabled until Noesis UI is available.
+- Customize wheel geometry, labels, texture sets, and per-option font size. Configured custom colors remain disabled until Noesis UI is available.
 - Retain each player's selection independently for every menu until they disconnect.
 
 ## Native Interaction Wheels
@@ -253,7 +253,7 @@ Do not retain `RadialMenuNpcTarget`, its entity reference, its NPC component, or
 ```
 
 ## Texture Slice Generator Script
-Use `scripts/generate_rotated_radial_slices.py` to generate all 8 textured slice files from one source image.
+Use `scripts/generate_rotated_radial_slices.py` to generate all 24 custom slice-state files from one source image.
 
 ```powershell
 python scripts/generate_rotated_radial_slices.py `
@@ -265,6 +265,7 @@ python scripts/generate_rotated_radial_slices.py `
 
 Notes:
 - Produces `CommandWheelSlice0..7_{Default,Hover,Pressed}.png`.
+- Copies `CommandWheelCenterPanel.png` when `--copy-core-from` is set.
 - Default rotation order is clockwise in 45-degree steps.
 - Use `--base-angle` to tweak orientation if slice 0 needs an offset.
 - `--mask-from` is recommended so generated textures keep the exact per-slice alpha silhouettes.

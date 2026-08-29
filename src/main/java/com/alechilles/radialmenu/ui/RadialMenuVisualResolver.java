@@ -20,6 +20,7 @@ import com.alechilles.radialmenu.config.RadialMenuConfig.TextureSet;
 
 public final class RadialMenuVisualResolver {
     public static final String DEFAULT_TEXTURE_PREFIX = "RadialMenu/Default";
+    private static final String BUILT_IN_HOVER_COLOR = "#b9dcff";
     private static final String[] SLICE_STATES = new String[] {"Default", "Hover", "Pressed"};
 
     private RadialMenuVisualResolver() {
@@ -83,6 +84,9 @@ public final class RadialMenuVisualResolver {
         if (prefix == null || prefix.isBlank()) {
             return DEFAULT_TEXTURE_PREFIX;
         }
+        if (DEFAULT_TEXTURE_PREFIX.equals(prefix)) {
+            return DEFAULT_TEXTURE_PREFIX;
+        }
 
         if (prefixCompletenessCheck != null && !prefixCompletenessCheck.test(prefix)) {
             if (warningSink != null) {
@@ -108,10 +112,34 @@ public final class RadialMenuVisualResolver {
                 expected.add(normalizedPrefix + "/CommandWheelSlice" + i + "_" + state + ".png");
             }
         }
-        expected.add(normalizedPrefix + "/CommandWheelRingOuter.png");
-        expected.add(normalizedPrefix + "/CommandWheelRingInner.png");
         expected.add(normalizedPrefix + "/CommandWheelCenterPanel.png");
         return List.copyOf(expected);
+    }
+
+    @Nonnull
+    public static ResolvedButtonTextures resolveButtonTextures(@Nonnull String texturePrefix,
+                                                                boolean fullWheelTextureSet,
+                                                                int textureIndex) {
+        String slicePrefix = fullWheelTextureSet ? texturePrefix + "/Cropped" : texturePrefix;
+        String defaultTexture = slicePrefix + "/CommandWheelSlice" + textureIndex + "_Default.png";
+        if (DEFAULT_TEXTURE_PREFIX.equals(texturePrefix)) {
+            return new ResolvedButtonTextures(
+                    defaultTexture,
+                    defaultTexture,
+                    defaultTexture,
+                    null,
+                    BUILT_IN_HOVER_COLOR,
+                    null
+            );
+        }
+        return new ResolvedButtonTextures(
+                defaultTexture,
+                slicePrefix + "/CommandWheelSlice" + textureIndex + "_Hover.png",
+                slicePrefix + "/CommandWheelSlice" + textureIndex + "_Pressed.png",
+                null,
+                null,
+                null
+        );
     }
 
     public static boolean textureSetLooksComplete(@Nonnull String prefix, @Nonnull Function<String, Boolean> resourceExists) {
@@ -171,5 +199,13 @@ public final class RadialMenuVisualResolver {
                                        @Nonnull ResolvedState pressedState,
                                        @Nonnull ResolvedState selectedState,
                                        @Nonnull ResolvedState disabledState) {
+    }
+
+    public record ResolvedButtonTextures(@Nonnull String defaultTexture,
+                                         @Nonnull String hoverTexture,
+                                         @Nonnull String pressedTexture,
+                                         @Nullable String defaultColor,
+                                         @Nullable String hoverColor,
+                                         @Nullable String pressedColor) {
     }
 }
