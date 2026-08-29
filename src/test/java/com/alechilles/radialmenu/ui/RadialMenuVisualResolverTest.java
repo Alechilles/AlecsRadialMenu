@@ -161,8 +161,9 @@ class RadialMenuVisualResolverTest {
         assertEquals("RadialMenu/Default/CommandWheelSlice3_Default.png", textures.defaultTexture());
         assertEquals(textures.defaultTexture(), textures.hoverTexture());
         assertEquals(textures.defaultTexture(), textures.pressedTexture());
-        assertEquals("#b9dcff", textures.hoverColor());
-        assertNull(textures.pressedColor());
+        assertEquals("#b0b0b0", textures.defaultColor());
+        assertNull(textures.hoverColor());
+        assertEquals("#b0b0b0", textures.pressedColor());
     }
 
     @Test

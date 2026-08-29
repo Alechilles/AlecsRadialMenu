@@ -25,7 +25,7 @@ The inner diameter must be smaller than the outer diameter. The center diameter 
 
 ## Color support
 
-The built-in wheel ships eight default slice textures and one center texture. It reuses each slice for hover and pressed states and supplies a fixed runtime color for hover. This is an experiment in the current Hytale UI. The pressed state uses the unchanged default slice.
+The built-in wheel ships eight default slice textures and one center texture. It reuses each slice for all button states. Normal and pressed slices use a fixed neutral runtime tint. Hover removes that tint and shows the brighter original texture.
 
 Configured `States`, per-option color overrides, and `BorderThicknessPx` remain reserved for future Noesis UI support. They do not recolor the current wheel.
 
