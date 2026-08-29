@@ -21,7 +21,7 @@ The plugin manifest requires the Hytale asset and NPC modules. These modules are
 
 ## Supported server versions
 
-Version `2.0.2` declares this server range:
+Version `2.0.3` declares this server range:
 
 ```text
 >=0.5.0 <0.7.0

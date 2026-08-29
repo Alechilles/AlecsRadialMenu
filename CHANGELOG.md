@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 2.0.3
 - Removed 106 unused legacy, experimental, duplicate-state, and full-wheel UI textures. The built-in wheel now ships eight normal slices, eight hover slices, and one center texture.
 - Disabled vector and custom color rendering until Noesis UI is available. Old `Vector` values fall back to the default texture mode, and custom texture folders remain supported.
 - Reused each built-in normal slice for the pressed state. Hover uses a separate, clearly brighter texture.
