@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Added Hytale Update 7 compatibility, including the `0.7.0-pre.4` pre-release, while retaining Update 5 and Update 6 support.
+
 ## 2.0.3
 - Removed 106 unused legacy, experimental, duplicate-state, and full-wheel UI textures. The built-in wheel now ships eight normal slices, eight hover slices, and one center texture.
 - Disabled vector and custom color rendering until Noesis UI is available. Old `Vector` values fall back to the default texture mode, and custom texture folders remain supported.
