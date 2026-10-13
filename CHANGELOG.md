@@ -1,8 +1,8 @@
 # Changelog
 
-## Unreleased
+## 2.0.4 - Hytale 0.7 Compatibility Hotfix - 2026-10-13
 
-- Added Hytale Update 7 compatibility, including the `0.7.0-pre.4` pre-release, while retaining Update 5 and Update 6 support.
+- Added Hytale Update 7 compatibility, including stable `0.7.0` and the `0.7.0-pre.4` pre-release, while retaining Update 5 and Update 6 support.
 
 ## 2.0.3
 - Removed 106 unused legacy, experimental, duplicate-state, and full-wheel UI textures. The built-in wheel now ships eight normal slices, eight hover slices, and one center texture.

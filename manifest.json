@@ -1,7 +1,7 @@
 {
   "Group": "Alechilles",
   "Name": "Alec's Radial Menu",
-  "Version": "2.0.3",
+  "Version": "2.0.4",
   "Description": "Standalone radial menu framework for Hytale mods.",
   "Authors": [
     {
@@ -13,7 +13,7 @@
   ],
   "Website": "",
   "Main": "com.alechilles.radialmenu.RadialMenuMod",
-  "ServerVersion": ">=0.5.0 <0.7.0",
+  "ServerVersion": ">=0.5.0 <0.8.0 || >=0.7.0-pre.4 <0.7.0",
   "Dependencies": {
     "Hytale:NPC": "*"
   },
