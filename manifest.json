@@ -1,7 +1,7 @@
 {
   "Group": "Alechilles",
   "Name": "Alec's Radial Menu",
-  "Version": "2.0.4",
+  "Version": "2.0.5",
   "Description": "Standalone radial menu framework for Hytale mods.",
   "Authors": [
     {
@@ -21,5 +21,8 @@
   "LoadBefore": {},
   "DisabledByDefault": false,
   "IncludesAssetPack": true,
-  "SubPlugins": []
+  "SubPlugins": [],
+  "UpdateChecker": {
+    "CurseForge": "1502691"
+  }
 }

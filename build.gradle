@@ -32,6 +32,7 @@ hytaleTools {
     manifestServerVersion = localProperty('hytale_server_version_range')
     manifestGroup = 'Alechilles'
     modId = "Alec's Radial Menu"
+    curseforgeId = '1502691'
     modDescription = 'Standalone radial menu framework for Hytale mods.'
     modCredits = 'Alec (Alechilles)||https://www.curseforge.com/members/alechilles/projects'
     mainClass = 'com.alechilles.radialmenu.RadialMenuMod'
